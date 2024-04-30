@@ -7,6 +7,7 @@
 #include "./show_area/show_widget.hpp"
 #include "QStyle"
 #include "QWidget"
+#include "ans_page/ans_stack.hpp"
 #include "qstackedwidget.h"
 #include <cstdlib>
 #include <qboxlayout.h>
@@ -19,7 +20,7 @@
 namespace Ui {
 class game_window {
 public:
-  QStackedWidget *ansArea;
+  QWidget *ansArea;
   QWidget *showArea;
   void setupUi(QWidget *w) {
     this->showArea = new QWidget(w);
@@ -34,7 +35,7 @@ public:
     layoutTop->addSpacerItem(
         new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
-    ansArea = new QStackedWidget(w);
+    ansArea = new QWidget(w);
     ansArea->setEnabled(false);
 #if uiTest
     ansArea->setStyleSheet("background-color: white");
@@ -56,6 +57,7 @@ class game_window : QWidget {
 private:
   Ui::game_window *ui;
   show_widget *show_grid;
+  ans_stack *ans_area;
 
 public:
   game_window(QList<int> game_datas = QList<int>(36, 0),
@@ -73,6 +75,12 @@ public:
     fix->addWidget(show_grid);
     this->ui->showArea->setLayout(fix);
 
+    this->ans_area = new ans_stack(ui->ansArea);
+    auto ansL = new QVBoxLayout();
+    ansL->addWidget(ans_area);
+    this->ui->ansArea->setLayout(ansL);
     this->show();
   }
+
+  ~game_window() { delete ui; }
 };
