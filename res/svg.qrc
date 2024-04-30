@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>tree-fill.svg</file>
+        <file>tree-stroke.svg</file>
+        <file>arrow-return-left.svg</file>
+        <file>three_tree.png</file>
+        <file>four_tree.png</file>
+        <file>two_tree.png</file>
+        <file>no_tree.png</file>
+    </qresource>
+</RCC>
