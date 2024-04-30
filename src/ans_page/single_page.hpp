@@ -3,6 +3,7 @@
  * @Date: 2024-04-30 18:49:18
  */
 #pragma once
+#include "ans_model.hpp"
 #include "opeator_mat.hpp"
 #include <Eigen/Core>
 #include <qboxlayout.h>
@@ -12,11 +13,10 @@
 #include <qsizepolicy.h>
 #include <qstackedwidget.h>
 #include <qwidget.h>
-
+#undef uiTest
 #define uiTest false
 namespace Ui {
 class single_page {
-
 public:
   QStackedWidget *ansWidget;
   QWidget *toolBar;
@@ -46,7 +46,7 @@ public:
 }; // namespace Ui
 
 class single_page : public QWidget {
-  using mat_ptr = QSharedPointer<Eigen::Matrix<bool, 6, 6>>;
+  using mat_ptr = QSharedPointer<bool_table>;
 
 private:
   Ui::single_page *ui;

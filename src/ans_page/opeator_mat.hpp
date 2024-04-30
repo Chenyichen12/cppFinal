@@ -3,6 +3,7 @@
  * @Date: 2024-04-30 19:11:53
  */
 #pragma once
+#include "ans_model.hpp"
 #include <Eigen/Eigen>
 #include <qgridlayout.h>
 #include <qimage.h>
@@ -63,7 +64,7 @@ public:
 };
 
 class opertor_mat : public QWidget {
-  using mat_ptr = QSharedPointer<Eigen::Matrix<bool, 6, 6>>;
+  using mat_ptr = QSharedPointer<bool_table>;
   Q_OBJECT
 private:
   mat_ptr opmat;
@@ -79,7 +80,7 @@ public:
     this->btnList = QList<tree_item *>(36);
     auto gLayout = new QGridLayout();
     if (opmat != nullptr) {
-      auto content = new Eigen::Matrix<bool, 6, 6>();
+      auto content = new bool_table();
       content->setConstant(false);
       this->opmat = mat_ptr(content);
     }

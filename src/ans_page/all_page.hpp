@@ -3,6 +3,7 @@
  * @Date: 2024-04-30 17:53:44
  */
 #pragma once
+#include "ans_model.hpp"
 #include <Eigen/Core>
 #include <Eigen/src/Core/Matrix.h>
 #include <qlist.h>
@@ -10,7 +11,7 @@
 #include <qwidget.h>
 
 class all_page : public QWidget {
-  using mat_ptr = QSharedPointer<Eigen::Matrix<bool, 6, 6>>;
+  using mat_ptr = QSharedPointer<bool_table>;
 
 private:
   QList<mat_ptr> showDatas;

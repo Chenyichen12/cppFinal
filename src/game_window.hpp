@@ -8,7 +8,6 @@
 #include "QStyle"
 #include "QWidget"
 #include "ans_page/ans_stack.hpp"
-#include "qstackedwidget.h"
 #include <cstdlib>
 #include <qboxlayout.h>
 #include <qlayoutitem.h>
@@ -16,8 +15,11 @@
 #include <qsizepolicy.h>
 #include <qwidget.h>
 
+#undef uiTest
 #define uiTest true
+
 namespace Ui {
+
 class game_window {
 public:
   QWidget *ansArea;
