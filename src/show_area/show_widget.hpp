@@ -85,7 +85,5 @@ public:
     this->update();
   }
 
-  std::shared_ptr<show_mat> getMat() const {
-    return std::make_shared<show_mat>(*this->currentDatas);
-  }
+  show_mat *borrowMat() const { return this->currentDatas.get(); }
 };

@@ -6,10 +6,9 @@
 #include "game_window.h"
 #include "ans_page/ans_model.hpp"
 #include "ans_page/ans_stack.hpp"
-#include <memory>
 #include <qtmetamacros.h>
 
-#define uiTest true
+#define uiTest false
 namespace Ui {
 class game_window {
 public:
@@ -33,8 +32,6 @@ public:
 #if uiTest
     ansArea->setObjectName("ansArea");
     ansArea->setStyleSheet("QWidget#ansArea{background-color: white;}");
-#else
-    ansArea->setStyleSheet("QStackedWidget:: QFrame{border:0px}");
 #endif
     auto mainLayout = new QVBoxLayout();
     mainLayout->addLayout(layoutTop);
@@ -49,7 +46,7 @@ public:
 game_window::game_window(QList<int> game_datas, QWidget *parent)
     : QWidget(parent), ui(new Ui::game_window) {
   ui->setupUi(this);
-#ifdef uiTest
+#if uiTest
   for (auto &d : game_datas) {
     d = rand() % 5;
   }
@@ -65,11 +62,10 @@ game_window::game_window(QList<int> game_datas, QWidget *parent)
   ansL->addWidget(ans_area);
   this->ui->ansArea->setLayout(ansL);
 
-  connect(ans_area, &ans_stack::submit_to_window,
-          [this](std::shared_ptr<ans_model> model) {
-            auto mat = this->show_grid->getMat();
-            emit submit(model, mat);
-          });
+  connect(ans_area, &ans_stack::submit_to_window, [this](ans_model *model) {
+    auto mat = this->show_grid->borrowMat();
+    emit submit(model, mat);
+  });
 
   this->show();
 }

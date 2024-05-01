@@ -17,6 +17,7 @@
 #include <qlabel.h>
 #include <qlayoutitem.h>
 #include <qlist.h>
+#include <qmargins.h>
 #include <qnamespace.h>
 #include <qobject.h>
 #include <qobjectdefs.h>
@@ -72,6 +73,15 @@ protected:
   }
 
 public:
+  void resizeEvent(QResizeEvent *event) override {
+    auto s = event->size();
+    if (s.width() == s.height()) {
+      return QWidget::resizeEvent(event);
+    }
+
+    auto min = s.height() > s.width() ? s.width() : s.height();
+    resize(min, min);
+  }
   tree_item(QWidget *parent = nullptr) : QWidget(parent) {}
   void setCheck(bool check) {
     this->isCheck = check;
@@ -110,6 +120,7 @@ public:
 
     auto container = new QWidget(this);
     auto gLayout = new QGridLayout();
+    gLayout->setContentsMargins(QMargins(0, 0, 0, 0));
     if (opmat == nullptr) {
       auto content = new bool_table();
       this->opmat = mat_ptr(content);
@@ -118,7 +129,6 @@ public:
     for (int i = 0; i < opmat->cols(); i++) {
       for (int j = 0; j < opmat->rows(); j++) {
         auto newBtn = new tree_item(container);
-        newBtn->setFixedSize(40, 40);
         gLayout->addWidget(newBtn, j, i);
         this->btnList(j, i) = newBtn;
       }

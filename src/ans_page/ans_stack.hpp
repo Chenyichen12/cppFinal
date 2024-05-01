@@ -41,11 +41,12 @@ public:
 
     // 提交按钮按下，提交模型给windows类
     connect(page1, &all_page::submit_has_click, this, [this]() {
-      auto share = std::make_shared<ans_model>(*this->model);
-      emit submit_to_window(share);
+      auto borrow = this->borrowModel();
+      emit submit_to_window(borrow);
     });
   }
 
+  ans_model *borrowModel() { return this->model.get(); }
 signals:
-  void submit_to_window(std::shared_ptr<ans_model> model);
+  void submit_to_window(ans_model *model);
 };

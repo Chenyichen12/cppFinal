@@ -16,8 +16,7 @@ protected:
   QList<question_struct> questions;
 
 public:
-  question_list(QString dataPath);
-  question_list();
+  question_list(QString dataPath = "");
 
   void append_question(question_struct &&data);
   void saveToDataBase(QString name);

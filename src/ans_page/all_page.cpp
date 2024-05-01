@@ -6,6 +6,7 @@
 #include "opeator_mat.hpp"
 #include <qboxlayout.h>
 #include <qlist.h>
+#include <qmargins.h>
 #include <qpushbutton.h>
 #include <qwidget.h>
 
@@ -47,6 +48,7 @@ all_page::all_page(QList<mat_ptr> showDatas, QWidget *parent)
   }
 
   auto ansLayout = new QVBoxLayout();
+  ansLayout->setContentsMargins(QMargins(0, 0, 0, 0));
   ansLayout->addLayout(x1Layout);
   ansLayout->addLayout(x2Layout);
 

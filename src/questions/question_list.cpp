@@ -11,8 +11,10 @@
 #include <qlist.h>
 #include <qscopedpointer.h>
 #include <utility>
-question_list::question_list() {
-  auto path = QString(":/mat/default_mat.json");
+question_list::question_list(QString path) {
+  if (path == "") {
+    path = QString(":/mat/default_mat.json");
+  }
   QFile file(path);
   if (!file.open(QIODevice::ReadOnly)) {
     qWarning("Cannot open file for reading");

@@ -7,7 +7,6 @@
 #include "ans_page/ans_stack.hpp"
 #include "show_area/show_mat.hpp"
 #include "show_area/show_widget.hpp"
-#include <memory>
 #include <qwidget.h>
 
 namespace Ui {
@@ -25,10 +24,8 @@ protected:
 public:
   game_window(QList<int> game_datas = QList<int>(36, 0),
               QWidget *parent = nullptr);
-
-  game_window(QWidget *parent = nullptr);
   ~game_window();
 
 signals:
-  void submit(std::shared_ptr<ans_model>, std::shared_ptr<show_mat> ans);
+  void submit(ans_model *borrowModel, show_mat *borrowAns);
 };
