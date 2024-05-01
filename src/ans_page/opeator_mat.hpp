@@ -8,11 +8,14 @@
 #include <Eigen/Eigen>
 #include <Eigen/src/Core/Matrix.h>
 #include <qboxlayout.h>
+#include <qcontainerfwd.h>
 #include <qcoreevent.h>
 #include <qdebug.h>
 #include <qevent.h>
 #include <qgridlayout.h>
 #include <qimage.h>
+#include <qlabel.h>
+#include <qlayoutitem.h>
 #include <qlist.h>
 #include <qnamespace.h>
 #include <qobject.h>
@@ -22,6 +25,7 @@
 #include <qpushbutton.h>
 #include <qscopedpointer.h>
 #include <qshareddata.h>
+#include <qsizepolicy.h>
 #include <qsvgrenderer.h>
 #include <qtmetamacros.h>
 #include <qwidget.h>
@@ -104,6 +108,7 @@ public:
     this->opmat = opmat;
     this->id = id;
 
+    auto container = new QWidget(this);
     auto gLayout = new QGridLayout();
     if (opmat == nullptr) {
       auto content = new bool_table();
@@ -112,13 +117,30 @@ public:
 
     for (int i = 0; i < opmat->cols(); i++) {
       for (int j = 0; j < opmat->rows(); j++) {
-        auto newBtn = new tree_item(this);
+        auto newBtn = new tree_item(container);
         newBtn->setFixedSize(40, 40);
         gLayout->addWidget(newBtn, j, i);
         this->btnList(j, i) = newBtn;
       }
     }
-    this->setLayout(gLayout);
+    container->setLayout(gLayout);
+
+    int req = opmat->getRequire();
+    auto requireLabel = new QLabel(QString("%1 x %1").arg(req), this);
+    requireLabel->setStyleSheet("QLabel{color: black;font-size: 20px}");
+    auto labelLayout = new QHBoxLayout();
+    labelLayout->addSpacerItem(new QSpacerItem(10, 10, QSizePolicy::Expanding,
+                                               QSizePolicy::Preferred));
+    labelLayout->addWidget(requireLabel);
+    labelLayout->addSpacerItem(new QSpacerItem(10, 10, QSizePolicy::Expanding,
+                                               QSizePolicy::Preferred));
+
+    auto lay = new QVBoxLayout();
+    lay->addWidget(container);
+    lay->addLayout(labelLayout);
+    lay->setStretch(0, 1);
+
+    this->setLayout(lay);
   }
 
   int getId() { return this->id; }
