@@ -5,12 +5,16 @@
 #include "./game_window.hpp"
 #include "qapplication.h"
 #include <qobject.h>
+#ifdef TREE_TEST
+#include "gtest/gtest.h"
+#endif
 
 int main(int argc, char **argv) {
 
 #ifdef TREE_TEST
 
-  return 0;
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 #else
   QApplication a(argc, argv);
   auto widget = new game_window();

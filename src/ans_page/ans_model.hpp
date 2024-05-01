@@ -13,8 +13,44 @@ private:
   int require;
 
 public:
-  // TODO: 检查是否完整
-  bool ifComplete() const { return false; }
+  // 检查是否完整
+  bool ifComplete() const {
+    auto firstIndex = [this]() {
+      for (int i = 0; i < rows(); i++) {
+        for (int j = 0; j < cols(); j++) {
+          if ((*this)(i, j) == true) {
+            // 前表示第一个true的index位置
+            return std::array<int, 2>{i, j};
+          }
+        }
+      }
+      return std::array<int, 2>{-1, -1};
+    }();
+    auto trueNum = [this]() {
+      int count = 0;
+      for (int i = 0; i < this->array().size(); i++) {
+        if (this->array()(i) == true) {
+          count++;
+        }
+      }
+      return count;
+    }();
+    if (firstIndex[0] == -1 || trueNum != require * require) {
+      return false;
+    }
+
+    for (int i = firstIndex[0]; i < require; i++) {
+      for (int j = firstIndex[1]; j < require; j++) {
+        if (i >= this->rows() || j >= this->cols()) {
+          return false;
+        }
+        if (!(*this)(i, j)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
   int getRequire() const { return this->require; }
 
   void setRequire(int require) { this->require = require; }
