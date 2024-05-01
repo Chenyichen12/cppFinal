@@ -47,8 +47,10 @@ endfunction(add_main_executable)
 add_main_executable()
 
 function(add_test_exectable)
-add_executable(treeTest
+qt_add_executable(treeTest
 ${PROJECT_SOURCES}
+../res/svg.qrc
+../res/mat.qrc
 )
 target_compile_definitions(treeTest PRIVATE TREE_TEST)
 
