@@ -12,8 +12,8 @@ namespace Ui {
 class game_window;
 }; // namespace Ui
 
-class game_window : QWidget {
-private:
+class game_window : public QWidget {
+protected:
   Ui::game_window *ui;
   show_widget *show_grid;
   ans_stack *ans_area;
@@ -22,5 +22,6 @@ public:
   game_window(QList<int> game_datas = QList<int>(36, 0),
               QWidget *parent = nullptr);
 
+  game_window(QWidget *parent = nullptr);
   ~game_window();
 };

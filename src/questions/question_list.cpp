@@ -45,3 +45,5 @@ void question_list::append_question(question_struct &&data) {
 question_struct question_list::getQuestion(int index) {
   return this->questions[index];
 }
+
+int question_list::questionCount() { return this->questions.size(); }

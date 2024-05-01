@@ -2,7 +2,7 @@
  * @Author: Chenyichen12 sama1538@outlook.com
  * @Date: 2024-04-30 14:10:03
  */
-#include "./game_window.h"
+#include "./game_window/game_window.h"
 #include "qapplication.h"
 #include <qobject.h>
 #ifdef TREE_TEST

@@ -2,6 +2,7 @@
  * @Author: Chenyichen12 sama1538@outlook.com
  * @Date: 2024-05-01 18:32:04
  */
+#pragma once
 #include <qlist.h>
 struct question_struct {
   enum diffculty { SIMPLE, HARD };
@@ -22,4 +23,5 @@ public:
   void saveToDataBase(QString name);
 
   question_struct getQuestion(int index);
+  int questionCount();
 };
