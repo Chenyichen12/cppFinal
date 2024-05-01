@@ -4,6 +4,7 @@
  */
 #pragma once
 #include "show_mat.hpp"
+#include <memory>
 #include <qcontainerfwd.h>
 #include <qimage.h>
 
@@ -82,5 +83,9 @@ public:
   void setDatas(QList<int> datas) {
     this->currentDatas.reset(new show_mat(datas));
     this->update();
+  }
+
+  std::shared_ptr<show_mat> getMat() const {
+    return std::make_shared<show_mat>(*this->currentDatas);
   }
 };

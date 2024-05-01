@@ -6,6 +6,7 @@
 #include "./ans_model.hpp"
 #include "all_page.h"
 #include "single_page.h"
+#include <memory>
 #include <qboxlayout.h>
 #include <qlist.h>
 #include <qscopedpointer.h>
@@ -20,7 +21,6 @@ private:
   all_page *page1;
   single_page *page2;
 
-protected:
 public:
   ans_stack(QWidget *parent = nullptr) : QStackedWidget(parent) {
     this->model.reset(new ans_model());
@@ -38,5 +38,14 @@ public:
     this->addWidget(page1);
     this->addWidget(page2);
     this->setCurrentWidget(page1);
+
+    // 提交按钮按下，提交模型给windows类
+    connect(page1, &all_page::submit_has_click, this, [this]() {
+      auto share = std::make_shared<ans_model>(*this->model);
+      emit submit_to_window(share);
+    });
   }
+
+signals:
+  void submit_to_window(std::shared_ptr<ans_model> model);
 };

@@ -17,6 +17,7 @@ class all_page : public QWidget {
 
 signals:
   void mat_has_click(int index);
+  void submit_has_click();
 
 private:
   QList<mat_ptr> showDatas;

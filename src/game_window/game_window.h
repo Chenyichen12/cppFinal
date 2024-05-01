@@ -3,8 +3,11 @@
  * @Date: 2024-04-30 14:54:17
  */
 #pragma once
+#include "ans_page/ans_model.hpp"
 #include "ans_page/ans_stack.hpp"
+#include "show_area/show_mat.hpp"
 #include "show_area/show_widget.hpp"
+#include <memory>
 #include <qwidget.h>
 
 namespace Ui {
@@ -13,6 +16,7 @@ class game_window;
 }; // namespace Ui
 
 class game_window : public QWidget {
+  Q_OBJECT
 protected:
   Ui::game_window *ui;
   show_widget *show_grid;
@@ -24,4 +28,7 @@ public:
 
   game_window(QWidget *parent = nullptr);
   ~game_window();
+
+signals:
+  void submit(std::shared_ptr<ans_model>, std::shared_ptr<show_mat> ans);
 };
