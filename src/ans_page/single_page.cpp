@@ -4,6 +4,7 @@
  */
 #include "single_page.h"
 #include "opeator_mat.hpp"
+#include <qstackedwidget.h>
 #define uiTest false
 namespace Ui {
 class single_page {

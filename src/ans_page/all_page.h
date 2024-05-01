@@ -5,11 +5,8 @@
 #pragma once
 #include "ans_model.hpp"
 #include "opeator_mat.hpp"
-#include <Eigen/Core>
-#include <Eigen/src/Core/Matrix.h>
-#include <qlist.h>
-#include <qtmetamacros.h>
 #include <qwidget.h>
+
 namespace Ui {
 class all_page;
 } // namespace Ui

@@ -3,16 +3,8 @@
  * @Date: 2024-04-30 14:54:17
  */
 #pragma once
-
-#include "./show_area/show_widget.hpp"
-#include "QStyle"
-#include "QWidget"
 #include "ans_page/ans_stack.hpp"
-#include <cstdlib>
-#include <qboxlayout.h>
-#include <qlayoutitem.h>
-#include <qlist.h>
-#include <qsizepolicy.h>
+#include "show_area/show_widget.hpp"
 #include <qwidget.h>
 
 namespace Ui {

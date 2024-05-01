@@ -4,14 +4,6 @@
  */
 #pragma once
 #include "ans_model.hpp"
-#include <Eigen/Core>
-#include <qboxlayout.h>
-#include <qlayoutitem.h>
-#include <qlist.h>
-#include <qpushbutton.h>
-#include <qsizepolicy.h>
-#include <qstackedwidget.h>
-#include <qtmetamacros.h>
 #include <qwidget.h>
 
 namespace Ui {
