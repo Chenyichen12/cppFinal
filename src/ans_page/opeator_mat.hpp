@@ -4,6 +4,7 @@
  */
 #pragma once
 #include "ans_model.hpp"
+#include "qtimer.h"
 #include <Eigen/Eigen>
 #include <Eigen/src/Core/Matrix.h>
 #include <qboxlayout.h>
@@ -19,6 +20,7 @@
 #include <qpainter.h>
 #include <qpoint.h>
 #include <qpushbutton.h>
+#include <qscopedpointer.h>
 #include <qshareddata.h>
 #include <qsvgrenderer.h>
 #include <qtmetamacros.h>
@@ -87,6 +89,15 @@ protected:
   void setMat(int i, int j, bool data) { (*this->opmat)(i, j) = data; };
   void setMat(int i, bool data) { (*this->opmat)(i) = data; }
 
+  void paintEvent(QPaintEvent *event) override {
+    for (int i = 0; i < opmat->cols(); i++) {
+      for (int j = 0; j < opmat->rows(); j++) {
+        btnList(j, i)->setCheck((*opmat)(j, i));
+      }
+    }
+    QWidget::paintEvent(event);
+  }
+
 public:
   explicit opertor_mat(int id, mat_ptr opmat = mat_ptr(nullptr),
                        QWidget *parent = nullptr) {
@@ -94,7 +105,7 @@ public:
     this->id = id;
 
     auto gLayout = new QGridLayout();
-    if (opmat != nullptr) {
+    if (opmat == nullptr) {
       auto content = new bool_table();
       this->opmat = mat_ptr(content);
     }
@@ -104,7 +115,6 @@ public:
         auto newBtn = new tree_item(this);
         newBtn->setFixedSize(40, 40);
         gLayout->addWidget(newBtn, j, i);
-        newBtn->setCheck((*opmat)(j, i));
         this->btnList(j, i) = newBtn;
       }
     }
@@ -132,7 +142,7 @@ private:
 
 protected:
   void paintEvent(QPaintEvent *event) override {
-    QWidget::paintEvent(event);
+    opertor_mat::paintEvent(event);
     if (!this->startPoint.isNull() && !this->endPoint.isNull()) {
       QRect r = QRect(*this->startPoint, *this->endPoint);
       QPainter painter(this);
@@ -157,8 +167,7 @@ protected:
           auto p = QPoint(item->pos().x() + item->width() / 2,
                           item->pos().y() + item->height() / 2);
           if (selectRect.contains(p)) {
-            item->setCheck(!item->getCheck());
-            this->setMat(j, i, item->getCheck());
+            this->setMat(j, i, !item->getCheck());
           }
         }
       }
@@ -168,8 +177,7 @@ protected:
           auto item = btnList(j, i);
           auto rect = item->geometry();
           if (rect.contains(*startPoint)) {
-            item->setCheck(!item->getCheck());
-            this->setMat(j, i, item->getCheck());
+            this->setMat(j, i, !item->getCheck());
           }
         }
       }
@@ -182,5 +190,32 @@ protected:
 public:
   explicit touch_opertor_mat(int id, mat_ptr opmat = mat_ptr(nullptr),
                              QWidget *parent = nullptr)
+      : opertor_mat(id, opmat, parent) {}
+};
+
+class all_page_mat : public opertor_mat {
+  Q_OBJECT
+private:
+  QScopedPointer<QTimer> clickTimer;
+
+protected:
+  void mousePressEvent(QMouseEvent *e) override {
+    clickTimer.reset(new QTimer());
+    clickTimer->setSingleShot(true);
+    clickTimer->start(200);
+  }
+  void mouseReleaseEvent(QMouseEvent *e) override {
+    if (clickTimer->isActive()) {
+      // 如果定时器还在运行，那么发送一个点击事件
+      emit clicked(this->getId());
+    }
+    clickTimer.reset(nullptr);
+  }
+signals:
+  void clicked(int id);
+
+public:
+  explicit all_page_mat(int id, mat_ptr opmat = mat_ptr(nullptr),
+                        QWidget *parent = nullptr)
       : opertor_mat(id, opmat, parent) {}
 };

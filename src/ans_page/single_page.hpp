@@ -12,6 +12,7 @@
 #include <qpushbutton.h>
 #include <qsizepolicy.h>
 #include <qstackedwidget.h>
+#include <qtmetamacros.h>
 #include <qwidget.h>
 #undef uiTest
 #define uiTest false
@@ -46,11 +47,14 @@ public:
 }; // namespace Ui
 
 class single_page : public QWidget {
+  Q_OBJECT
   using mat_ptr = QSharedPointer<bool_table>;
 
 private:
   Ui::single_page *ui;
   QList<mat_ptr> datas;
+signals:
+  void rtbClick();
 
 public:
   single_page(QList<mat_ptr> datas, int index = 0, QWidget *parent = nullptr)
@@ -61,7 +65,11 @@ public:
       auto ansWidget = new touch_opertor_mat(i, datas[i], ui->ansWidget);
       ui->ansWidget->addWidget(ansWidget);
     }
-    ui->ansWidget->setCurrentIndex(3);
+
+    connect(this->ui->returnBtn, &QPushButton::clicked, this,
+            &single_page::rtbClick);
   }
+
+  void setAnsArea(int index) { this->ui->ansWidget->setCurrentIndex(index); }
   ~single_page() { delete ui; }
 };
