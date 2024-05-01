@@ -5,7 +5,7 @@
 #pragma once
 #include "./ans_model.hpp"
 #include "all_page.h"
-#include "single_page.hpp"
+#include "single_page.h"
 #include <qboxlayout.h>
 #include <qlist.h>
 #include <qscopedpointer.h>
