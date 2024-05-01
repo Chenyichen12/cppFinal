@@ -27,7 +27,8 @@ public:
   void setupUi(QWidget *w) {
     this->showArea = new QWidget(w);
 #if uiTest
-    showArea->setStyleSheet("background-color:white;");
+    showArea->setObjectName("showArea");
+    showArea->setStyleSheet("QWidget#showArea{background-color:white;}");
 #endif
     showArea->setMinimumSize(400, 400);
     auto layoutTop = new QHBoxLayout;
@@ -38,9 +39,9 @@ public:
         new QSpacerItem(20, 40, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
     ansArea = new QWidget(w);
-    ansArea->setEnabled(false);
 #if uiTest
-    ansArea->setStyleSheet("background-color: white");
+    ansArea->setObjectName("ansArea");
+    ansArea->setStyleSheet("QWidget#ansArea{background-color: white;}");
 #else
     ansArea->setStyleSheet("QStackedWidget:: QFrame{border:0px}");
 #endif

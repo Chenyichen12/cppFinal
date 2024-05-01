@@ -58,10 +58,10 @@ public:
     ui->setupUi(this);
     this->datas = datas;
     for (int i = 0; i < datas.size(); i++) {
-      auto ansWidget = new opertor_mat(i, datas[i], ui->ansWidget);
+      auto ansWidget = new touch_opertor_mat(i, datas[i], ui->ansWidget);
       ui->ansWidget->addWidget(ansWidget);
-      ui->ansWidget->setCurrentWidget(ansWidget);
     }
+    ui->ansWidget->setCurrentIndex(3);
   }
   ~single_page() { delete ui; }
 };

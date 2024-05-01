@@ -5,14 +5,23 @@
 #pragma once
 #include "ans_model.hpp"
 #include <Eigen/Eigen>
+#include <Eigen/src/Core/Matrix.h>
+#include <qboxlayout.h>
+#include <qcoreevent.h>
+#include <qdebug.h>
+#include <qevent.h>
 #include <qgridlayout.h>
 #include <qimage.h>
 #include <qlist.h>
+#include <qnamespace.h>
 #include <qobject.h>
+#include <qobjectdefs.h>
 #include <qpainter.h>
+#include <qpoint.h>
 #include <qpushbutton.h>
 #include <qshareddata.h>
 #include <qsvgrenderer.h>
+#include <qtmetamacros.h>
 #include <qwidget.h>
 
 namespace treeImage {
@@ -20,7 +29,7 @@ inline QImage generateImage(bool plant) {
   if (plant) {
     QSvgRenderer renderer;
     auto image = QImage(300, 300, QImage::Format_RGBA8888);
-    memset(image.bits(), 0x00, image.sizeInBytes());
+    image.fill(Qt::transparent);
     renderer.load(QString(":/icon/tree-fill.svg"));
     QPainter p(&image);
     renderer.render(&p);
@@ -28,7 +37,7 @@ inline QImage generateImage(bool plant) {
   } else {
     QSvgRenderer renderer;
     auto image = QImage(300, 300, QImage::Format_RGBA8888);
-    memset(image.bits(), 0x00, image.sizeInBytes());
+    image.fill(Qt::transparent);
     renderer.load(QString(":/icon/tree-stroke.svg"));
     QPainter p(&image);
     renderer.render(&p);
@@ -40,7 +49,7 @@ static QImage plant = generateImage(true);
 }; // namespace treeImage
 
 // 负责绘制树是否选中
-class tree_item : public QPushButton {
+class tree_item : public QWidget {
 private:
   bool isCheck = false;
 
@@ -50,26 +59,33 @@ protected:
     painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
     if (this->isCheck) {
       painter.drawImage(this->rect(), treeImage::plant);
+
     } else {
       painter.drawImage(this->rect(), treeImage::noPlant);
     }
   }
 
 public:
-  tree_item(QWidget *parent = nullptr) : QPushButton(parent) {}
+  tree_item(QWidget *parent = nullptr) : QWidget(parent) {}
   void setCheck(bool check) {
     this->isCheck = check;
     this->update();
   }
+  bool getCheck() const { return this->isCheck; }
 };
 
 class opertor_mat : public QWidget {
+protected:
   using mat_ptr = QSharedPointer<bool_table>;
-  Q_OBJECT
+
 private:
   mat_ptr opmat;
   int id;
-  QList<tree_item *> btnList;
+
+protected:
+  Eigen::Matrix<tree_item *, 6, 6> btnList;
+  void setMat(int i, int j, bool data) { (*this->opmat)(i, j) = data; };
+  void setMat(int i, bool data) { (*this->opmat)(i) = data; }
 
 public:
   explicit opertor_mat(int id, mat_ptr opmat = mat_ptr(nullptr),
@@ -77,19 +93,19 @@ public:
     this->opmat = opmat;
     this->id = id;
 
-    this->btnList = QList<tree_item *>(36);
     auto gLayout = new QGridLayout();
     if (opmat != nullptr) {
       auto content = new bool_table();
-      content->setConstant(false);
       this->opmat = mat_ptr(content);
     }
+
     for (int i = 0; i < opmat->cols(); i++) {
       for (int j = 0; j < opmat->rows(); j++) {
         auto newBtn = new tree_item(this);
         newBtn->setFixedSize(40, 40);
         gLayout->addWidget(newBtn, j, i);
         newBtn->setCheck((*opmat)(j, i));
+        this->btnList(j, i) = newBtn;
       }
     }
     this->setLayout(gLayout);
@@ -106,4 +122,65 @@ public:
 
   int getXNum() { return this->opmat->cols(); }
   int getYNum() { return this->opmat->rows(); }
+};
+
+class touch_opertor_mat : public opertor_mat {
+  Q_OBJECT
+private:
+  QScopedPointer<QPoint> startPoint = QScopedPointer<QPoint>(nullptr);
+  QScopedPointer<QPoint> endPoint = QScopedPointer<QPoint>(nullptr);
+
+protected:
+  void paintEvent(QPaintEvent *event) override {
+    QWidget::paintEvent(event);
+    if (!this->startPoint.isNull() && !this->endPoint.isNull()) {
+      QRect r = QRect(*this->startPoint, *this->endPoint);
+      QPainter painter(this);
+      painter.setBrush(Qt::red);
+      painter.drawRect(r);
+    }
+  }
+  void mousePressEvent(QMouseEvent *event) override {
+    this->startPoint.reset(new QPoint(event->pos()));
+    this->endPoint.reset(nullptr);
+  }
+  void mouseMoveEvent(QMouseEvent *event) override {
+    this->endPoint.reset(new QPoint(event->pos()));
+    this->update();
+  }
+  void mouseReleaseEvent(QMouseEvent *event) override {
+    if (!startPoint.isNull() && !endPoint.isNull()) {
+      QRect selectRect = QRect(*startPoint, *endPoint);
+      for (int i = 0; i < btnList.cols(); i++) {
+        for (int j = 0; j < btnList.rows(); j++) {
+          auto item = btnList(j, i);
+          auto p = QPoint(item->pos().x() + item->width() / 2,
+                          item->pos().y() + item->height() / 2);
+          if (selectRect.contains(p)) {
+            item->setCheck(!item->getCheck());
+            this->setMat(j, i, item->getCheck());
+          }
+        }
+      }
+    } else if (!startPoint->isNull()) {
+      for (int i = 0; i < btnList.cols(); i++) {
+        for (int j = 0; j < btnList.rows(); j++) {
+          auto item = btnList(j, i);
+          auto rect = item->geometry();
+          if (rect.contains(*startPoint)) {
+            item->setCheck(!item->getCheck());
+            this->setMat(j, i, item->getCheck());
+          }
+        }
+      }
+    }
+    this->startPoint.reset(nullptr);
+    this->endPoint.reset(nullptr);
+    this->update();
+  }
+
+public:
+  explicit touch_opertor_mat(int id, mat_ptr opmat = mat_ptr(nullptr),
+                             QWidget *parent = nullptr)
+      : opertor_mat(id, opmat, parent) {}
 };
