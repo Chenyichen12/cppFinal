@@ -47,6 +47,9 @@ all_page::all_page(QList<mat_ptr> showDatas, QWidget *parent)
     matChild.push_back(newBtn);
   }
 
+  connect(this->ui->sumitBtn, &QPushButton::clicked, this,
+          &all_page::submit_has_click);
+
   auto ansLayout = new QVBoxLayout();
   ansLayout->setContentsMargins(QMargins(0, 0, 0, 0));
   ansLayout->addLayout(x1Layout);
