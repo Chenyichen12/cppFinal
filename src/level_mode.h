@@ -24,6 +24,7 @@ class level_mode : public QWidget {
 private:
   std::unique_ptr<question_list> questions;
   Ui::level_mode *ui;
+  int current_index;
 
 public:
   level_mode(QString loadPath = "", QWidget *parent = nullptr);

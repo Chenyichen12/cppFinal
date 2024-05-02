@@ -44,6 +44,9 @@ level_mode::level_mode(QString path, QWidget *parent)
     connect(game, &game_window::submit, this, &level_mode::handle_submit);
   }
 
+  this->current_index = 0;
+  ui->game_stack->setCurrentIndex(current_index);
+
   this->setObjectName("level_mode");
   this->setStyleSheet("#level_mode {background-color: white;}");
 }
@@ -61,9 +64,14 @@ void level_mode::handle_submit(ans_model *borrow_model, show_mat *borrow_mat) {
     msgBox->addButton("下一题", QMessageBox::AcceptRole);
     auto res = msgBox->exec();
     if (res == QMessageBox::AcceptRole) {
-      qDebug() << "下一题";
+      this->current_index++;
+      if (this->current_index >= questions->questionCount()) {
+        // TODO: 闯关成功，进行结算。
+
+      } else {
+        ui->game_stack->setCurrentIndex(this->current_index);
+      }
     }
-    msgBox->exec();
 
   } else {
     // 作答错误
