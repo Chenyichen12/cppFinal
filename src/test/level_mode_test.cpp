@@ -15,7 +15,7 @@ TEST(level_mode, testHandle1) {
 
   auto mat = new show_mat(q.mat);
   (*ans->getMat(0))(2, 3) = true;
-  (*ans->getMat(1))(0, 6) = true;
+  (*ans->getMat(1))(0, 5) = true;
 
   (*ans->getMat(2))(2, 2) = true;
   (*ans->getMat(2))(2, 3) = true;
@@ -33,14 +33,14 @@ TEST(level_mode, testHandle1) {
     }
   }
 
-  for (int i = 2; i < 5; i++) {
-    for (int j = 0; j < 3; j++) {
+  for (int i = 0; i < 3; i++) {
+    for (int j = 2; j < 5; j++) {
       (*ans->getMat(5))(i, j) = true;
     }
   }
 
-  for (int i = 0; i < 4; i++) {
-    for (int j = 2; j < 6; j++) {
+  for (int i = 2; i < 6; i++) {
+    for (int j = 0; j < 4; j++) {
       (*ans->getMat(6))(i, j) = true;
     }
   }

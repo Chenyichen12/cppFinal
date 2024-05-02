@@ -7,10 +7,16 @@
 #include "game_window/game_window.h"
 #include "questions/question_list.h"
 #include <qboxlayout.h>
+#include <qdialog.h>
 #include <qlabel.h>
+#include <qmessagebox.h>
+#include <qnamespace.h>
 #include <qobject.h>
+#include <qpushbutton.h>
 #include <qstackedwidget.h>
+#include <qtimer.h>
 #include <qwidget.h>
+
 void Ui::level_mode::setupUi(QWidget *w) {
   this->game_stack = new QStackedWidget(w);
   this->game_title = new QLabel("闯关模式", w);
@@ -45,16 +51,56 @@ level_mode::level_mode(QString path, QWidget *parent)
 level_mode::~level_mode() { delete this->ui; }
 
 void level_mode::handle_submit(ans_model *borrow_model, show_mat *borrow_mat) {
-  /**判断作答是否正确*/
   bool ifCorrect = this->check_correct(borrow_model, borrow_mat);
 
   if (ifCorrect) {
+    auto msgBox = new QMessageBox(this);
+    msgBox->setAttribute(Qt::WA_DeleteOnClose);
+    msgBox->setText("作答正确");
+
+    msgBox->addButton("下一题", QMessageBox::AcceptRole);
+    auto res = msgBox->exec();
+    if (res == QMessageBox::AcceptRole) {
+      qDebug() << "下一题";
+    }
+    msgBox->exec();
+
+  } else {
+    // 作答错误
+    auto msgBox =
+        new QMessageBox(QMessageBox::Icon::Critical, "错误的答案", "作答错误",
+                        QMessageBox::StandardButton::NoButton, this);
+    msgBox->setAttribute(Qt::WA_DeleteOnClose);
+    msgBox->setWindowFlags(Qt::Window | Qt::WindowTitleHint |
+                           Qt::CustomizeWindowHint);
+    auto retryBtn = new QPushButton("重试(10s)", msgBox);
+    retryBtn->setEnabled(false);
+    msgBox->addButton(retryBtn, QMessageBox::AcceptRole);
+    QTimer *timer = new QTimer(msgBox);
+    int *count = new int(10);
+    connect(timer, &QTimer::timeout, this, [retryBtn, count, timer]() {
+      (*count)--;
+      if (*count == 0) {
+        retryBtn->setText(QString("重试"));
+        delete count;
+        timer->stop();
+        retryBtn->setEnabled(true);
+      } else {
+        retryBtn->setText(QString("重试%1s").arg(*count));
+      }
+    });
+    timer->start(1000);
+    msgBox->exec();
   }
 }
-
+/**判断作答是否正确*/
 bool level_mode::check_correct(ans_model *borrow_model, show_mat *borrow_mat) {
   auto matList = borrow_model->getMat();
-
+  for (auto booltable : matList) {
+    if (!booltable->ifComplete()) {
+      return false;
+    }
+  }
   auto cols = matList[0]->cols();
   auto rows = matList[0]->rows();
 

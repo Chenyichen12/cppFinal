@@ -14,8 +14,9 @@ public:
     if (l.size() != 36) {
       throw std::invalid_argument("not 36");
     }
-    for (int i = 0; i < 36; i++) {
-      (*this)(i) = l[i];
+    for (int i = 0; i < 6; i++) {
+      for (int j = 0; j < 6; j++)
+        (*this)(i, j) = l[i * 6 + j];
     }
   }
 };
