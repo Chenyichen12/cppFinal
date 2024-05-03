@@ -3,6 +3,7 @@
  * @Date: 2024-05-02 19:55:06
  */
 #include "welcome_page.h"
+#include <qapplication.h>
 #include <qboxlayout.h>
 #include <qfont.h>
 #include <qlabel.h>
@@ -91,6 +92,14 @@ public:
 welcome_page::welcome_page(QWidget *parent)
     : QWidget(parent), ui(new Ui::welcome_page()) {
   ui->setupUi(this);
+  connect(ui->level_mode_btn, &QPushButton::clicked,
+          [this]() { qDebug() << "enter_level"; });
+  connect(ui->create_mode_btn, &QPushButton::clicked, this,
+          [this]() { qDebug() << "create"; });
+  connect(ui->exit_btn, &QPushButton::clicked, this, [this]() {
+    qDebug() << "exit";
+    QApplication::exit(0);
+  });
 }
 
 welcome_page::~welcome_page() { delete this->ui; }
