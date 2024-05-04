@@ -43,6 +43,8 @@ single_page::single_page(QList<mat_ptr> datas, int index, QWidget *parent)
   for (int i = 0; i < datas.size(); i++) {
     auto ansWidget = new touch_opertor_mat(i, datas[i], ui->ansWidget);
     ui->ansWidget->addWidget(ansWidget);
+    connect(ansWidget, &touch_opertor_mat::mat_has_update, this,
+            &single_page::dataHasChange);
   }
 
   connect(this->ui->returnBtn, &QPushButton::clicked, this,

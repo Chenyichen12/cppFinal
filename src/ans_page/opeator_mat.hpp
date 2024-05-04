@@ -164,6 +164,8 @@ public:
 
   int getXNum() { return this->opmat->cols(); }
   int getYNum() { return this->opmat->rows(); }
+
+  mat_ptr getOpMat() { return this->opmat; }
 };
 
 class touch_opertor_mat : public opertor_mat {
@@ -217,7 +219,10 @@ protected:
     this->startPoint.reset(nullptr);
     this->endPoint.reset(nullptr);
     this->update();
+    emit mat_has_update();
   }
+signals:
+  void mat_has_update();
 
 public:
   explicit touch_opertor_mat(int id, mat_ptr opmat = mat_ptr(nullptr),

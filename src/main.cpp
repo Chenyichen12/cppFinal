@@ -3,9 +3,9 @@
  * @Date: 2024-04-30 14:10:03
  */
 #include "./welcome_page.h"
+#include "create_page/create_game_window.hpp"
 #include "qapplication.h"
 #include <qobject.h>
-
 
 #ifdef TREE_TEST
 #include "gtest/gtest.h"
@@ -19,8 +19,8 @@ int main(int argc, char **argv) {
   return RUN_ALL_TESTS();
 #else
   QApplication a(argc, argv);
-  auto widget = new welcome_page();
-  widget->show();
+  auto w = new create_game_window();
+  w->show();
   a.exec();
   return 0;
 #endif

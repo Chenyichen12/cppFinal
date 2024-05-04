@@ -19,6 +19,7 @@ private:
   QList<mat_ptr> datas;
 signals:
   void rtbClick();
+  void dataHasChange();
 
 public:
   single_page(QList<mat_ptr> datas, int index = 0, QWidget *parent = nullptr);
