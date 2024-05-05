@@ -6,11 +6,13 @@
 #include "show_area/show_mat.hpp"
 #include "show_num_page.h"
 #include <memory>
+#include <qboxlayout.h>
 #include <qevent.h>
 #include <qgridlayout.h>
 #include <qlist.h>
 #include <qmargins.h>
 #include <qnamespace.h>
+#include <qpushbutton.h>
 #include <qsize.h>
 #include <qtmetamacros.h>
 #include <qwidget.h>
@@ -26,9 +28,18 @@ void num_page_grid::resetMat(std::shared_ptr<show_mat> model) {
 }
 select_page::select_page(QWidget *parent) : QScrollArea(parent) {
   this->show_child = QList<num_page_grid *>();
+
   mainLayout = new QGridLayout();
   auto content = new QWidget();
-  content->setLayout(mainLayout);
+
+  auto VBoxLayout = new QVBoxLayout();
+  auto add_new_btn = new QPushButton("添加", this);
+  connect(add_new_btn, &QPushButton::clicked, this,
+          &select_page::add_has_click);
+
+  VBoxLayout->addWidget(add_new_btn);
+  VBoxLayout->addLayout(mainLayout);
+  content->setLayout(VBoxLayout);
   this->setWidget(content);
   this->setAutoFillBackground(true);
   this->setWidgetResizable(true);

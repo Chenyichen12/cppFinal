@@ -4,6 +4,7 @@
  */
 #include "show_num_page.h"
 #include <qlist.h>
+#include <qpainter.h>
 #include <qsize.h>
 #include <qwidget.h>
 show_num_page::show_num_page(QWidget *parent) : QWidget(parent) {
@@ -47,4 +48,10 @@ void show_num_page::paintEvent(QPaintEvent *event) {
                        QString("%1").arg((*this->data_mat)(row, col)));
     }
   }
+  QPen pen(Qt::black);
+  painter.setPen(pen);
+
+  painter.drawRect(QRect(startX - 3 * margin, startY - 3 * margin,
+                         gridSize * (cellSize + margin) + margin,
+                         gridSize * (cellSize + margin) + margin));
 }
