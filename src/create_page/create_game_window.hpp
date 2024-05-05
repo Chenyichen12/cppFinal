@@ -7,7 +7,9 @@
 #include "create_page.hpp"
 #include "show_area/show_mat.hpp"
 #include "show_num_page.h"
+#include <memory>
 #include <qwidget.h>
+#include <qwindowdefs.h>
 
 namespace Ui {
 class create_game_window {
@@ -60,7 +62,7 @@ public:
 
     connect(ans_area, &create_stack::submit_to_window,
             [this](ans_model *model) {
-              auto mat = this->show_grid->borrow_mat();
+              auto mat = this->getShowMat();
               emit submit(model, mat);
             });
 
@@ -68,8 +70,12 @@ public:
         this->ans_area, &create_stack::data_change, this,
         [this](ans_model *model) { show_grid->upDateMat(model->getMat()); });
   }
+
   ~create_game_window() { delete ui; }
 
+  std::shared_ptr<show_mat> getShowMat() {
+    return this->show_grid->borrow_mat();
+  }
 signals:
-  void submit(ans_model *borrowModel, show_mat *borrowAns);
+  void submit(ans_model *borrowModel, std::shared_ptr<show_mat> borrowAns);
 };
