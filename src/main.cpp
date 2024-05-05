@@ -25,6 +25,7 @@ int main(int argc, char **argv) {
   w->add_num_page(std::make_shared<show_mat>());
   w->add_num_page(std::make_shared<show_mat>());
   w->add_num_page(std::make_shared<show_mat>());
+  w->add_num_page(std::make_shared<show_mat>());
   w->show();
   a.exec();
   return 0;

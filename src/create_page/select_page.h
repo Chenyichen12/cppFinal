@@ -9,6 +9,7 @@
 #include <qevent.h>
 #include <qgridlayout.h>
 #include <qlist.h>
+#include <qscrollarea.h>
 #include <qtmetamacros.h>
 #include <qwidget.h>
 
@@ -23,7 +24,7 @@ public:
 signals:
   void clicked();
 };
-class select_page : public QWidget {
+class select_page : public QScrollArea {
   Q_OBJECT
 private:
   QList<num_page_grid *> show_child;

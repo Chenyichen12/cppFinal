@@ -24,10 +24,14 @@ void num_page_grid::mousePressEvent(QMouseEvent *event) {
 void num_page_grid::resetMat(std::shared_ptr<show_mat> model) {
   this->data_mat = model;
 }
-select_page::select_page(QWidget *parent) : QWidget(parent) {
+select_page::select_page(QWidget *parent) : QScrollArea(parent) {
   this->show_child = QList<num_page_grid *>();
   mainLayout = new QGridLayout();
-  this->setLayout(mainLayout);
+  auto content = new QWidget();
+  content->setLayout(mainLayout);
+  this->setWidget(content);
+  this->setAutoFillBackground(true);
+  this->setWidgetResizable(true);
 }
 
 void select_page::add_num_page(std::shared_ptr<show_mat> model) {
@@ -47,8 +51,8 @@ void select_page::add_num_page(std::shared_ptr<show_mat> model) {
 
   int row = 3;
 
-  int xIndex = this->show_child.size() % (row + 1);
-  int yIndex = this->show_child.size() / (row + 1);
+  int xIndex = (this->show_child.size() - 1) % row;
+  int yIndex = (this->show_child.size() - 1) / row;
 
   this->mainLayout->addWidget(newWidget, yIndex, xIndex);
   this->update();
