@@ -37,6 +37,14 @@ ${MAIN_SOURCE}
 ../res/svg.qrc
 ../res/mat.qrc
 )
+
+target_precompile_headers(PlantTree PRIVATE  <QCoreApplication>
+<QObject>
+<QWidget>
+<QList>
+<QString>
+<QVector>
+<QMap>)
 target_link_libraries(PlantTree PRIVATE Qt6::Widgets
         PRIVATE Qt6::Svg PRIVATE Qt6::Gui PRIVATE Qt6::Core
 

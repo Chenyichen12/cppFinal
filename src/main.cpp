@@ -4,10 +4,8 @@
  */
 #include "./welcome_page.h"
 #include "create_page/create_mode.h"
-#include "create_page/select_page.h"
 #include "qapplication.h"
-#include "show_area/show_mat.hpp"
-#include <memory>
+
 #include <qobject.h>
 
 #ifdef TREE_TEST
@@ -25,6 +23,7 @@ int main(int argc, char **argv) {
   auto w = new create_mode();
   w->show();
   a.exec();
+  int b = 10;
   return 0;
 #endif
 }
