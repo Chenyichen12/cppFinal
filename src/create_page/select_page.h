@@ -29,6 +29,7 @@ class select_page : public QScrollArea {
 private:
   QList<num_page_grid *> show_child;
   QGridLayout *mainLayout;
+  QWidget *create_grid_widget(num_page_grid *);
 
 public:
   select_page(QWidget *parent = nullptr);
@@ -38,4 +39,6 @@ signals:
   void widget_has_click(int index);
   void add_has_click();
   void save_data(QList<QList<int>> datas);
+
+  void widget_has_delete(int index);
 };

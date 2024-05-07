@@ -15,6 +15,7 @@
 #include <qnamespace.h>
 #include <qpushbutton.h>
 #include <qsize.h>
+#include <qsizepolicy.h>
 #include <qtmetamacros.h>
 #include <qwidget.h>
 num_page_grid::num_page_grid(QWidget *parent) : show_num_page(parent) {}
@@ -31,6 +32,7 @@ select_page::select_page(QWidget *parent) : QScrollArea(parent) {
   this->show_child = QList<num_page_grid *>();
 
   mainLayout = new QGridLayout();
+
   auto content = new QWidget();
 
   auto VBoxLayout = new QVBoxLayout();
@@ -86,6 +88,32 @@ void select_page::add_num_page(std::shared_ptr<show_mat> model) {
   int xIndex = (this->show_child.size() - 1) % row;
   int yIndex = (this->show_child.size() - 1) / row;
 
-  this->mainLayout->addWidget(newWidget, yIndex, xIndex);
+  this->mainLayout->addWidget(create_grid_widget(newWidget), yIndex, xIndex);
   this->update();
+}
+
+QWidget *select_page::create_grid_widget(num_page_grid *w) {
+  auto grid_widget = new QWidget(this);
+  w->setParent(grid_widget);
+  auto deleteBtn = new QPushButton("删除", grid_widget);
+  auto layout = new QVBoxLayout();
+  layout->addWidget(w);
+  layout->addWidget(deleteBtn);
+  connect(deleteBtn, &QPushButton::clicked, [=]() {
+    if (w == nullptr) {
+      return;
+    }
+    for (int i = 0; i < this->show_child.size(); i++) {
+      if (w == this->show_child[i]) {
+        emit widget_has_delete(i);
+      }
+    }
+
+    grid_widget->deleteLater();
+  });
+
+  grid_widget->setLayout(layout);
+  grid_widget->setObjectName("grid");
+  grid_widget->setStyleSheet("#grid{border: 1px solid black;}");
+  return grid_widget;
 }
