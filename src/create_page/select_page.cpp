@@ -105,6 +105,7 @@ QWidget *select_page::create_grid_widget(num_page_grid *w) {
     }
     for (int i = 0; i < this->show_child.size(); i++) {
       if (w == this->show_child[i]) {
+        this->show_child.remove(i);
         emit widget_has_delete(i);
       }
     }

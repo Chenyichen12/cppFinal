@@ -56,6 +56,13 @@ create_mode::create_mode(QWidget *parent) : QStackedWidget(parent) {
   });
 
   connect(introPage, &select_page::save_data, this, &create_mode::save_data);
+  connect(introPage, &select_page::widget_has_delete, this, [this](int index) {
+    qDebug() << index;
+    auto widget = game_widget[index];
+    game_widget.remove(index);
+    this->removeWidget(widget);
+    widget->deleteLater();
+  });
 }
 
 void create_mode::save_data(QList<QList<int>> data) {
