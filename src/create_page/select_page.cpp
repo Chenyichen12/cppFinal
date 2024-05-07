@@ -5,6 +5,7 @@
 #include "select_page.h"
 #include "show_area/show_mat.hpp"
 #include "show_num_page.h"
+#include <array>
 #include <memory>
 #include <qboxlayout.h>
 #include <qevent.h>
@@ -34,11 +35,31 @@ select_page::select_page(QWidget *parent) : QScrollArea(parent) {
 
   auto VBoxLayout = new QVBoxLayout();
   auto add_new_btn = new QPushButton("添加", this);
+
+  auto save_btn = new QPushButton("保存", this);
+  connect(save_btn, &QPushButton::clicked, this, [this]() {
+    auto datas = QList<QList<int>>();
+    for (auto a : this->show_child) {
+      auto mat = a->borrow_mat();
+      auto list = QList<int>();
+      for (int i = 0; i < mat->rows(); i++) {
+        for (int j = 0; j < mat->cols(); j++) {
+          list.append((*mat)(i, j));
+        }
+      }
+      datas.append(list);
+    }
+    if (datas.size() == 0) {
+      return;
+    }
+    emit this->save_data(std::move(datas));
+  });
   connect(add_new_btn, &QPushButton::clicked, this,
           &select_page::add_has_click);
 
   VBoxLayout->addWidget(add_new_btn);
   VBoxLayout->addLayout(mainLayout);
+  VBoxLayout->addWidget(save_btn);
   content->setLayout(VBoxLayout);
   this->setWidget(content);
   this->setAutoFillBackground(true);

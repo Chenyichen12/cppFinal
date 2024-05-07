@@ -29,14 +29,12 @@ question_list::question_list(QString path) {
       question_struct::SIMPLE, question_struct::SIMPLE, question_struct::HARD};
 
   for (auto value : array) {
-    auto obj = value.toObject();
-    auto mat = obj.value("mat").toArray();
-    auto diff = obj.value("difficulty").toInt();
     auto matArray = QList<int>();
+    auto mat = value.toArray();
     for (auto d : mat) {
       matArray.append(d.toInt());
     }
-    this->append_question({matArray, diffArray[diff]});
+    this->append_question({matArray, question_struct::SIMPLE});
   }
 }
 

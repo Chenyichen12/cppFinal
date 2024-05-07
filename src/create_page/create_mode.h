@@ -22,6 +22,9 @@ class create_mode : public QStackedWidget {
 private:
   select_page *introPage;
   QList<create_game_window *> game_widget;
+  QString request_save_path();
+private slots:
+  void save_data(QList<QList<int>> data);
 
 public:
   create_mode(QWidget *parent = nullptr);

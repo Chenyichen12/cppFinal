@@ -37,4 +37,5 @@ public:
 signals:
   void widget_has_click(int index);
   void add_has_click();
+  void save_data(QList<QList<int>> datas);
 };
