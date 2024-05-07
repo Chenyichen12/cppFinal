@@ -5,6 +5,7 @@
 #pragma once
 #include "create_game_window.hpp"
 #include "select_page.h"
+#include <optional>
 #include <qlist.h>
 #include <qstackedwidget.h>
 #include <qtmetamacros.h>
@@ -23,10 +24,14 @@ private:
   select_page *introPage;
   QList<create_game_window *> game_widget;
   QString request_save_path();
+  std::optional<QString> filePath;
+
+  create_game_window *add_game_widget();
 private slots:
   void save_data(QList<QList<int>> data);
 
 public:
   create_mode(QWidget *parent = nullptr);
+  create_mode(QString file_path, QWidget *parent = nullptr);
   check_result checkLegial(ans_model *model, std::shared_ptr<show_mat> mat);
 };

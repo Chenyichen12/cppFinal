@@ -5,6 +5,7 @@
 #include "create_mode.h"
 #include "create_game_window.hpp"
 #include "select_page.h"
+#include <optional>
 #include <qcontainerfwd.h>
 #include <qdebug.h>
 #include <qfiledialog.h>
@@ -18,46 +19,11 @@ create_mode::create_mode(QWidget *parent) : QStackedWidget(parent) {
   this->introPage = new select_page(this);
   this->addWidget(introPage);
   connect(introPage, &select_page::add_has_click, this, [this]() {
-    auto newWidget = new create_game_window(this);
-    this->addWidget(newWidget);
-    this->introPage->add_num_page(newWidget->getShowMat());
-    this->game_widget.append(newWidget);
-
-    connect(introPage, &select_page::widget_has_click, this, [this](int index) {
-      auto ptr = game_widget[index];
-      this->setCurrentWidget(ptr);
-    });
-    connect(newWidget, &create_game_window::submit, this,
-            [this](ans_model *model, std::shared_ptr<show_mat> mat) {
-              auto res = this->checkLegial(model, mat);
-              switch (res) {
-              case NO_FOUR_TREE:
-                QMessageBox::warning(this, "错误的矩阵",
-                                     "必须要有一个方格种植四颗树苗");
-
-                break;
-              case MORE_FOUR_TREE:
-                QMessageBox::warning(this, "错误的矩阵",
-                                     "多个方格种植了四颗以上的树苗");
-                break;
-              case MAT_NOT_COMPLETE:
-                QMessageBox::warning(this, "错误的矩阵", "种植矩阵不完整");
-                break;
-
-              case COMPLETE:
-                this->setCurrentWidget(introPage);
-                break;
-              default:
-                QMessageBox::warning(this, "错误的矩阵", "未知错误");
-                return;
-              }
-            });
+    auto newWidget = add_game_widget();
     this->setCurrentWidget(newWidget);
   });
-
   connect(introPage, &select_page::save_data, this, &create_mode::save_data);
   connect(introPage, &select_page::widget_has_delete, this, [this](int index) {
-    qDebug() << index;
     auto widget = game_widget[index];
     game_widget.remove(index);
     this->removeWidget(widget);
@@ -65,11 +31,76 @@ create_mode::create_mode(QWidget *parent) : QStackedWidget(parent) {
   });
 }
 
+create_game_window *create_mode::add_game_widget() {
+  auto newWidget = new create_game_window(this);
+  this->addWidget(newWidget);
+  this->introPage->add_num_page(newWidget->getShowMat());
+  this->game_widget.append(newWidget);
+
+  connect(introPage, &select_page::widget_has_click, this, [this](int index) {
+    auto ptr = game_widget[index];
+    this->setCurrentWidget(ptr);
+  });
+  connect(newWidget, &create_game_window::submit, this,
+          [this](ans_model *model, std::shared_ptr<show_mat> mat) {
+            auto res = this->checkLegial(model, mat);
+            switch (res) {
+            case NO_FOUR_TREE:
+              QMessageBox::warning(this, "错误的矩阵",
+                                   "必须要有一个方格种植四颗树苗");
+
+              break;
+            case MORE_FOUR_TREE:
+              QMessageBox::warning(this, "错误的矩阵",
+                                   "多个方格种植了四颗以上的树苗");
+              break;
+            case MAT_NOT_COMPLETE:
+              QMessageBox::warning(this, "错误的矩阵", "种植矩阵不完整");
+              break;
+
+            case COMPLETE:
+              this->setCurrentWidget(introPage);
+              break;
+            default:
+              QMessageBox::warning(this, "错误的矩阵", "未知错误");
+              return;
+            }
+          });
+
+  return newWidget;
+}
+
+create_mode::create_mode(QString filePath, QWidget *parent)
+    : create_mode(parent) {
+  this->filePath = filePath;
+  QFile file(filePath);
+  if (!file.open(QIODevice::ReadOnly)) {
+    qWarning("Cannot open file for reading");
+    return;
+  }
+
+  QByteArray data = file.readAll();
+  QJsonDocument doc = QJsonDocument::fromJson(data);
+  auto array = doc.array();
+
+  for (auto value : array) {
+    auto matArray = QList<int>();
+    auto mat = value.toArray();
+    for (auto d : mat) {
+      matArray.append(d.toInt());
+    }
+  }
+}
 void create_mode::save_data(QList<QList<int>> data) {
   // 获取保存位置
-  auto filePath = this->request_save_path();
-  if (filePath == "")
+  if (!this->filePath.has_value()) {
+    filePath = this->request_save_path();
+  }
+  if (filePath == "") {
+    filePath = std::nullopt;
     return;
+  }
+
   auto mat_array = QJsonArray();
   for (int i = 0; i < data.size(); i++) {
     auto mat = QJsonArray();
@@ -82,7 +113,7 @@ void create_mode::save_data(QList<QList<int>> data) {
   QJsonDocument doc(mat_array);
   QString jsonStr(doc.toJson(QJsonDocument::Compact));
 
-  QFile file(filePath);
+  QFile file(*filePath);
   if (!file.open(QIODevice::WriteOnly)) {
     qDebug() << "Could not open file for writing";
     return;
