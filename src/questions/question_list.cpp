@@ -3,7 +3,6 @@
  * @Date: 2024-05-01 18:44:53
  */
 #include "question_list.h"
-#include <array>
 #include <qfile.h>
 #include <qjsonarray.h>
 #include <qjsondocument.h>
@@ -25,9 +24,6 @@ question_list::question_list(QString path) {
   QJsonDocument doc = QJsonDocument::fromJson(data);
   auto array = doc.array();
 
-  auto diffArray = std::array<question_struct::diffculty, 3>{
-      question_struct::SIMPLE, question_struct::SIMPLE, question_struct::HARD};
-
   for (auto value : array) {
     auto matArray = QList<int>();
     auto mat = value.toArray();
@@ -46,4 +42,5 @@ question_struct question_list::getQuestion(int index) {
   return this->questions[index];
 }
 
-int question_list::questionCount() { return this->questions.size(); }
+int question_list::questionCount() { return (int)this->questions.size(); }
+void question_list::saveToDataBase(QString name) {}

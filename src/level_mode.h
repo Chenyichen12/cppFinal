@@ -27,8 +27,8 @@ private:
   int current_index;
 
 public:
-  level_mode(QString loadPath = "", QWidget *parent = nullptr);
-  ~level_mode();
+  explicit level_mode(const QString &loadPath = "", QWidget *parent = nullptr);
+  ~level_mode() override;
   static bool check_correct(ans_model *borrow_model, show_mat *borrow_mat);
 public slots:
   void handle_submit(ans_model *borrow_model, show_mat *borrow_mat);

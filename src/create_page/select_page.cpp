@@ -3,19 +3,13 @@
  * @Date: 2024-05-05 10:15:03
  */
 #include "select_page.h"
-#include "show_area/show_mat.hpp"
 #include "show_num_page.h"
-#include <array>
 #include <memory>
 #include <qboxlayout.h>
 #include <qevent.h>
 #include <qgridlayout.h>
 #include <qlist.h>
-#include <qmargins.h>
-#include <qnamespace.h>
 #include <qpushbutton.h>
-#include <qsize.h>
-#include <qsizepolicy.h>
 #include <qtmetamacros.h>
 #include <qwidget.h>
 num_page_grid::num_page_grid(QWidget *parent) : show_num_page(parent) {}

@@ -7,7 +7,7 @@
 struct question_struct {
   enum diffculty { SIMPLE, HARD };
   QList<int> mat;
-  diffculty diff;
+  diffculty diff = SIMPLE;
 };
 
 class question_list {
@@ -16,7 +16,7 @@ protected:
   QList<question_struct> questions;
 
 public:
-  question_list(QString dataPath = "");
+  explicit question_list(QString dataPath = "");
 
   void append_question(question_struct &&data);
   void saveToDataBase(QString name);
