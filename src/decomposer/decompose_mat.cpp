@@ -3,91 +3,97 @@
  * @Date: 2024-05-07 21:24:01
  */
 #include "decompose_mat.h"
-#include <Eigen/src/Core/Matrix.h>
-#include <array>
-#include <memory>
 #include <qdebug.h>
 #include <utility>
-class decomposer::composer_mat : public Eigen::Matrix<int, 6, 6> {
-private:
-  int require = 4;
-  std::pair<int, int> topLeft;
-
-  void initMat() {
-    for (int i = 0; i < require; i++) {
-      for (int j = 0; j < require; j++) {
-        (*this)(i + topLeft.first, j + topLeft.second) = 1;
-      }
+void composer_mat::initMat() {
+  for (int i = 0; i < require; i++) {
+    for (int j = 0; j < require; j++) {
+      (*this)(i + topLeft.first, j + topLeft.second) = 1;
     }
   }
+}
 
-  static bool checkIfNegative(const Eigen::Matrix<int, 6, 6> &mat) {
-    for (int i = 0; i < mat.size(); i++) {
-      if (mat(i) < 0) {
-        return true;
-      }
+bool composer_mat::checkIfNegative(const Eigen::Matrix<int, 6, 6> &mat) {
+  for (int i = 0; i < mat.size(); i++) {
+    if (mat(i) < 0) {
+      return true;
     }
+  }
+  return false;
+}
+
+composer_mat::composer_mat(Eigen::Matrix<int, 6, 6> mat, int require)
+    : Eigen::Matrix<int, 6, 6>(std::move(mat)) {
+  this->topLeft.first = 0;
+  this->topLeft.second = 0;
+  this->require = require;
+  initMat();
+}
+composer_mat::composer_mat(int require) {
+  this->setConstant(0);
+  this->topLeft.first = 0;
+  this->topLeft.second = 0;
+  this->require = require;
+  initMat();
+}
+
+void composer_mat::setRequire(int r) { this->require = r; }
+
+void composer_mat::resetTopLeft() {
+  this->topLeft = std::pair<int, int>(0, 0);
+  this->setConstant(0);
+  for (int i = 0; i < require; i++) {
+    for (int j = 0; j < require; j++) {
+      (*this)(i + topLeft.first, j + topLeft.second) = 1;
+    }
+  }
+}
+bool composer_mat::checkOk(const Eigen::Matrix<int, 6, 6> &mat) {
+  auto newMat = mat - (*this);
+  if (checkIfNegative(newMat)) {
     return false;
   }
-
-public:
-  explicit composer_mat(Eigen::Matrix<int, 6, 6> mat, int require = 4)
-      : Eigen::Matrix<int, 6, 6>(std::move(mat)) {
-    this->topLeft.first = 0;
-    this->topLeft.second = 0;
-    this->require = require;
-    initMat();
-  }
-  explicit composer_mat(int require = 4) {
-    this->setConstant(0);
-    this->topLeft.first = 0;
-    this->topLeft.second = 0;
-    this->require = require;
-    initMat();
-  }
-
-  void setRequire(int r) { this->require = r; }
-
-  void resetTopLeft() {
-    this->topLeft = std::pair<int, int>(0, 0);
-    this->setConstant(0);
-    for (int i = 0; i < require; i++) {
-      for (int j = 0; j < require; j++) {
-        (*this)(i + topLeft.first, j + topLeft.second) = 1;
-      }
-    }
-  }
-  bool checkOk(const Eigen::Matrix<int, 6, 6> &mat) {
-    auto newMat = mat - (*this);
-    if (checkIfNegative(newMat)) {
+  return true;
+}
+bool composer_mat::moveNext() {
+  if (topLeft.second == 6 - require) {
+    topLeft.second = 0;
+    if (topLeft.first == 6 - require) {
       return false;
-    }
-    return true;
-  }
-  bool moveNext() {
-    if (topLeft.second == 6 - require) {
-      topLeft.second = 0;
-      if (topLeft.first == 6 - require) {
-        return false;
-      } else {
-        topLeft.first++;
-      }
     } else {
-      topLeft.second++;
+      topLeft.first++;
     }
-
-    this->setConstant(0);
-    for (int i = 0; i < require; i++) {
-      for (int j = 0; j < require; j++) {
-        (*this)(i + topLeft.first, j + topLeft.second) = 1;
-      }
-    }
-    return true;
+  } else {
+    topLeft.second++;
   }
-};
+
+  this->setConstant(0);
+  for (int i = 0; i < require; i++) {
+    for (int j = 0; j < require; j++) {
+      (*this)(i + topLeft.first, j + topLeft.second) = 1;
+    }
+  }
+  return true;
+}
 
 decomposer::decomposer(const Eigen::Matrix<int, 6, 6> &mat) {
   this->ans_mat = std::make_unique<Eigen::Matrix<int, 6, 6>>(mat);
+  auto needArray = std::array<int, 7>{4, 3, 3, 2, 2, 1, 1};
+  for (int i = 0; i < 7; i++) {
+    mats[i] = std::make_unique<composer_mat>(needArray[i]);
+  }
+  this->ifDecomposer = false;
+}
+decomposer::decomposer(const QList<int> &array) {
+  if (array.size() != 36) {
+    throw std::invalid_argument("array size must be 36");
+  }
+  this->ans_mat =
+      std::make_unique<Eigen::Matrix<int, 6, 6>>(Eigen::Matrix<int, 6, 6>());
+
+  for (int i = 0; i < array.size(); ++i) {
+    (*this->ans_mat)(i) = array[i];
+  }
   auto needArray = std::array<int, 7>{4, 3, 3, 2, 2, 1, 1};
   for (int i = 0; i < 7; i++) {
     mats[i] = std::make_unique<composer_mat>(needArray[i]);
@@ -118,12 +124,7 @@ bool decomposer::ifGo(int c, const Eigen::Matrix<int, 6, 6> &currentMat) {
     }
   }
 }
-void decomposer::Decompose() {
-  ifGo(0, *this->ans_mat);
-  if (this->ifDecomposer) {
-    qDebug() << "yes";
-  }
-}
+void decomposer::Decompose() { ifGo(0, *this->ans_mat); }
 bool decomposer::ifDecompose() const { return this->ifDecomposer; }
 QList<Eigen::Matrix<int, 6, 6>> decomposer::get_ans_mat() {
   auto res = QList<Eigen::Matrix<int, 6, 6>>();
@@ -131,6 +132,8 @@ QList<Eigen::Matrix<int, 6, 6>> decomposer::get_ans_mat() {
   for (const auto &item : this->mats) {
     res.append(*item);
   }
+  // 翻转这个列表
+  std::reverse(res.begin(), res.end());
   return std::move(res);
 }
 
@@ -138,9 +141,13 @@ QList<Eigen::Matrix<int, 6, 6>> decomposer::get_ans_mat() {
 #include <gtest/gtest.h>
 class tree_test {
 public:
-  static std::array<std::unique_ptr<decomposer::composer_mat>, 7> getMat() {
+  static std::array<std::unique_ptr<composer_mat>, 7> getMat() {
     auto data = decomposer(Eigen::Matrix<int, 6, 6>());
     return std::move(data.mats);
+  }
+
+  static Eigen::Matrix<int, 6, 6> *get_mat_origin(decomposer *model) {
+    return model->ans_mat.get();
   }
 };
 
@@ -184,5 +191,19 @@ TEST(decomposer, test_complete) {
     matRes += item;
   }
   matEqual(matRes, data);
+}
+
+TEST(decomposer, test_array_construtor) {
+  auto data = QList<int>();
+  for (int i = 0; i < 36; ++i) {
+    data.append(i);
+  }
+  auto model = decomposer(data);
+  auto mat = tree_test::get_mat_origin(&model);
+  for (int i = 0; i < 36; i++) {
+    ASSERT_EQ((*mat)(i), i);
+  }
+
+  ASSERT_EQ((*mat)(1, 1), 7);
 }
 #endif

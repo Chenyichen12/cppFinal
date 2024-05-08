@@ -4,9 +4,27 @@
  */
 #pragma once
 #include <Eigen/Core>
-#include <array>
-#include <memory>
 #include <qlist.h>
+class composer_mat : public Eigen::Matrix<int, 6, 6> {
+private:
+  int require = 4;
+  std::pair<int, int> topLeft;
+
+  void initMat();
+
+  static bool checkIfNegative(const Eigen::Matrix<int, 6, 6> &mat);
+
+public:
+  explicit composer_mat(Eigen::Matrix<int, 6, 6> mat, int require = 4);
+  explicit composer_mat(int require = 4);
+
+  void setRequire(int r);
+
+  void resetTopLeft();
+  bool checkOk(const Eigen::Matrix<int, 6, 6> &mat);
+  bool moveNext();
+};
+
 #ifdef TREE_TEST
 class tree_test;
 #endif
@@ -15,7 +33,6 @@ class decomposer {
   friend tree_test;
 #endif
 private:
-  class composer_mat;
   std::array<std::unique_ptr<composer_mat>, 7> mats;
   bool ifDecomposer;
 
@@ -26,6 +43,7 @@ private:
 
 public:
   explicit decomposer(const Eigen::Matrix<int, 6, 6> &mat);
+  explicit decomposer(const QList<int> &array);
   void Decompose();
   bool ifDecompose() const;
   QList<Eigen::Matrix<int, 6, 6>> get_ans_mat();

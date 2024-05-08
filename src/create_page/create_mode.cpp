@@ -3,6 +3,7 @@
  * @Date: 2024-05-05 15:49:34
  */
 #include "create_mode.h"
+#include "../decomposer/decompose_mat.h"
 #include "create_game_window.hpp"
 #include "select_page.h"
 #include <optional>
@@ -15,7 +16,6 @@
 #include <qstackedwidget.h>
 #include <qwidget.h>
 #include <utility>
-
 create_mode::create_mode(QWidget *parent) : QStackedWidget(parent) {
   this->introPage = new select_page(this);
   this->addWidget(introPage);
@@ -88,6 +88,13 @@ create_mode::create_mode(const QString &filePath, QWidget *parent)
     auto mat = value.toArray();
     for (auto d : mat) {
       matArray.append(d.toInt());
+    }
+    auto de = decomposer(matArray);
+    de.Decompose();
+    if (de.ifDecompose()) {
+      auto newWidget = add_game_widget();
+      auto deModel = de.get_ans_mat();
+      newWidget->setAns(deModel);
     }
   }
 }

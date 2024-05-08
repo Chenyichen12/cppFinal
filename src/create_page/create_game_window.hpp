@@ -71,10 +71,21 @@ public:
         [this](ans_model *model) { show_grid->upDateMat(model->getMat()); });
   }
 
-  ~create_game_window() { delete ui; }
+  ~create_game_window() override { delete ui; }
 
   std::shared_ptr<show_mat> getShowMat() {
     return this->show_grid->borrow_mat();
+  }
+  void setAns(const QList<Eigen::Matrix<int, 6, 6>> &newAns) {
+    auto newModel = ans_model();
+    auto mat = newModel.getMat();
+    for (int i = 0; i < newAns.size(); i++) {
+      auto a = newAns[i];
+      for (int j = 0; j < a.size(); j++) {
+        (*mat[i])(j) = a(j) == 1;
+      }
+    }
+    this->ans_area->setAnsModel(newModel);
   }
 signals:
   void submit(ans_model *borrowModel, std::shared_ptr<show_mat> borrowAns);

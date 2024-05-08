@@ -17,7 +17,7 @@ private:
   single_page *page2;
 
 public:
-  create_stack(QWidget *parent = nullptr) : QStackedWidget(parent) {
+  explicit create_stack(QWidget *parent = nullptr) : QStackedWidget(parent) {
     this->model.reset(new ans_model());
     this->page1 = new all_page(model->getMat(), this);
 
@@ -45,6 +45,19 @@ public:
   }
 
   ans_model *borrowModel() { return this->model.get(); }
+  void setAnsModel(const ans_model &ansModel) {
+    auto newAns = ansModel.getMat();
+    auto thisAns = this->model->getMat();
+    for (int i = 0; i < newAns.size(); i++) {
+      auto a = newAns[i];
+      auto b = thisAns[i];
+      for (int j = 0; j < a->size(); j++) {
+        (*b)(j) = (*a)(j);
+      }
+    }
+
+    emit data_change(this->borrowModel());
+  }
 signals:
   void submit_to_window(ans_model *model);
   void data_change(ans_model *model);
