@@ -19,7 +19,7 @@ public:
   explicit question_list(QString dataPath = "");
 
   void append_question(question_struct &&data);
-  void saveToDataBase(QString name);
+  void saveToDataBase(const QString &name);
 
   question_struct getQuestion(int index);
   int questionCount();

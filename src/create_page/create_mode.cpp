@@ -14,6 +14,7 @@
 #include <qmessagebox.h>
 #include <qstackedwidget.h>
 #include <qwidget.h>
+#include <utility>
 
 create_mode::create_mode(QWidget *parent) : QStackedWidget(parent) {
   this->introPage = new select_page(this);
@@ -22,7 +23,9 @@ create_mode::create_mode(QWidget *parent) : QStackedWidget(parent) {
     auto newWidget = add_game_widget();
     this->setCurrentWidget(newWidget);
   });
-  connect(introPage, &select_page::save_data, this, &create_mode::save_data);
+
+  connect(introPage, &select_page::save_data, this,
+          &create_mode::handle_save_data);
   connect(introPage, &select_page::widget_has_delete, this, [this](int index) {
     auto widget = game_widget[index];
     game_widget.remove(index);
@@ -42,8 +45,8 @@ create_game_window *create_mode::add_game_widget() {
     this->setCurrentWidget(ptr);
   });
   connect(newWidget, &create_game_window::submit, this,
-          [this](ans_model *model, std::shared_ptr<show_mat> mat) {
-            auto res = this->checkLegial(model, mat);
+          [this](ans_model *model, const std::shared_ptr<show_mat> &mat) {
+            auto res = create_mode::checkLegial(model, mat);
             switch (res) {
             case NO_FOUR_TREE:
               QMessageBox::warning(this, "错误的矩阵",
@@ -61,16 +64,13 @@ create_game_window *create_mode::add_game_widget() {
             case COMPLETE:
               this->setCurrentWidget(introPage);
               break;
-            default:
-              QMessageBox::warning(this, "错误的矩阵", "未知错误");
-              return;
             }
           });
 
   return newWidget;
 }
 
-create_mode::create_mode(QString filePath, QWidget *parent)
+create_mode::create_mode(const QString &filePath, QWidget *parent)
     : create_mode(parent) {
   this->filePath = filePath;
   QFile file(filePath);
@@ -91,7 +91,7 @@ create_mode::create_mode(QString filePath, QWidget *parent)
     }
   }
 }
-void create_mode::save_data(QList<QList<int>> data) {
+void create_mode::handle_save_data(QList<QList<int>> &data) {
   // 获取保存位置
   if (!this->filePath.has_value()) {
     filePath = this->request_save_path();
@@ -102,10 +102,10 @@ void create_mode::save_data(QList<QList<int>> data) {
   }
 
   auto mat_array = QJsonArray();
-  for (int i = 0; i < data.size(); i++) {
+  for (auto &i : data) {
     auto mat = QJsonArray();
-    for (int j = 0; j < data[i].size(); j++) {
-      mat.append(data[i][j]);
+    for (int j : i) {
+      mat.append(j);
     }
     mat_array.append(mat);
   }
@@ -131,9 +131,10 @@ QString create_mode::request_save_path() {
   return std::move(fileName);
 }
 create_mode::check_result
-create_mode::checkLegial(ans_model *model, std::shared_ptr<show_mat> mat) {
-  for (auto mat : model->getMat()) {
-    if (!mat->ifComplete()) {
+create_mode::checkLegial(ans_model *model,
+                         const std::shared_ptr<show_mat> &mat) {
+  for (const auto &ans_mat : model->getMat()) {
+    if (!ans_mat->ifComplete()) {
       return MAT_NOT_COMPLETE;
     }
   }

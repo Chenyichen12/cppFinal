@@ -22,7 +22,7 @@ protected:
   ans_stack *ans_area;
 
 public:
-  game_window(QList<int> game_datas = QList<int>(36, 0),
+  game_window(const QList<int> &game_datas = QList<int>(36, 0),
               QWidget *parent = nullptr);
   ~game_window();
 

@@ -43,4 +43,4 @@ question_struct question_list::getQuestion(int index) {
 }
 
 int question_list::questionCount() { return (int)this->questions.size(); }
-void question_list::saveToDataBase(QString name) {}
+void question_list::saveToDataBase(const QString &name) {}

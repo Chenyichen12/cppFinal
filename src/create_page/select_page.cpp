@@ -12,6 +12,7 @@
 #include <qpushbutton.h>
 #include <qtmetamacros.h>
 #include <qwidget.h>
+#include <utility>
 num_page_grid::num_page_grid(QWidget *parent) : show_num_page(parent) {}
 
 void num_page_grid::mousePressEvent(QMouseEvent *event) {
@@ -20,7 +21,7 @@ void num_page_grid::mousePressEvent(QMouseEvent *event) {
 }
 
 void num_page_grid::resetMat(std::shared_ptr<show_mat> model) {
-  this->data_mat = model;
+  this->data_mat = std::move(model);
 }
 select_page::select_page(QWidget *parent) : QScrollArea(parent) {
   this->show_child = QList<num_page_grid *>();
@@ -45,10 +46,10 @@ select_page::select_page(QWidget *parent) : QScrollArea(parent) {
       }
       datas.append(list);
     }
-    if (datas.size() == 0) {
+    if (datas.empty()) {
       return;
     }
-    emit this->save_data(std::move(datas));
+    emit this->save_data(datas);
   });
   connect(add_new_btn, &QPushButton::clicked, this,
           &select_page::add_has_click);
@@ -64,7 +65,7 @@ select_page::select_page(QWidget *parent) : QScrollArea(parent) {
 
 void select_page::add_num_page(std::shared_ptr<show_mat> model) {
   auto newWidget = new num_page_grid(this);
-  newWidget->resetMat(model);
+  newWidget->resetMat(std::move(model));
   this->show_child.append(newWidget);
   connect(newWidget, &num_page_grid::clicked, this, [=]() {
     if (newWidget == nullptr) {
@@ -79,8 +80,8 @@ void select_page::add_num_page(std::shared_ptr<show_mat> model) {
 
   int row = 3;
 
-  int xIndex = (this->show_child.size() - 1) % row;
-  int yIndex = (this->show_child.size() - 1) / row;
+  int xIndex = (int)(this->show_child.size() - 1) % row;
+  int yIndex = (int)(this->show_child.size() - 1) / row;
 
   this->mainLayout->addWidget(create_grid_widget(newWidget), yIndex, xIndex);
   this->update();

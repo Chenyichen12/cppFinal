@@ -19,7 +19,7 @@ protected:
   void mousePressEvent(QMouseEvent *event) override;
 
 public:
-  num_page_grid(QWidget *parent = nullptr);
+  explicit num_page_grid(QWidget *parent = nullptr);
   void resetMat(std::shared_ptr<show_mat>);
 signals:
   void clicked();
@@ -32,13 +32,13 @@ private:
   QWidget *create_grid_widget(num_page_grid *);
 
 public:
-  select_page(QWidget *parent = nullptr);
+  explicit select_page(QWidget *parent = nullptr);
   void add_num_page(std::shared_ptr<show_mat> model);
 
 signals:
   void widget_has_click(int index);
   void add_has_click();
-  void save_data(QList<QList<int>> datas);
+  void save_data(QList<QList<int>> &datas);
 
   void widget_has_delete(int index);
 };

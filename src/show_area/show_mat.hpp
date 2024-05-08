@@ -10,7 +10,7 @@
 class show_mat : public Eigen::Matrix<int, 6, 6> {
 public:
   show_mat() { this->setZero(); }
-  show_mat(QList<int> l) {
+  explicit show_mat(const QList<int> &l) {
     if (l.size() != 36) {
       throw std::invalid_argument("not 36");
     }

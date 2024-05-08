@@ -27,11 +27,12 @@ private:
   std::optional<QString> filePath;
 
   create_game_window *add_game_widget();
-private slots:
-  void save_data(QList<QList<int>> data);
+
+  void handle_save_data(QList<QList<int>> &data);
 
 public:
-  create_mode(QWidget *parent = nullptr);
-  create_mode(QString file_path, QWidget *parent = nullptr);
-  check_result checkLegial(ans_model *model, std::shared_ptr<show_mat> mat);
+  explicit create_mode(QWidget *parent = nullptr);
+  explicit create_mode(const QString &file_path, QWidget *parent = nullptr);
+  static check_result checkLegial(ans_model *model,
+                                  const std::shared_ptr<show_mat> &mat);
 };

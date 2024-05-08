@@ -64,7 +64,8 @@ protected:
   }
 
 public:
-  show_widget(QList<int> datas, QWidget *parent = nullptr) : QWidget(parent) {
+  explicit show_widget(const QList<int> &datas, QWidget *parent = nullptr)
+      : QWidget(parent) {
     if (datas.length() != 36) {
       throw std::invalid_argument("Invalid data length. Expected 36.");
     }
@@ -83,7 +84,7 @@ public:
     this->four_tree = QImage(":/icon/four_tree.png");
   }
 
-  void setDatas(QList<int> datas) {
+  void setDatas(const QList<int> &datas) {
     this->currentDatas.reset(new show_mat(datas));
     this->update();
   }

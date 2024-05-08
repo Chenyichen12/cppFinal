@@ -43,7 +43,7 @@ public:
   }
 };
 }; // namespace Ui
-game_window::game_window(QList<int> game_datas, QWidget *parent)
+game_window::game_window(const QList<int> &game_datas, QWidget *parent)
     : QWidget(parent), ui(new Ui::game_window) {
   ui->setupUi(this);
 #if uiTest
