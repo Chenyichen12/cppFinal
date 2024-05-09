@@ -2,10 +2,10 @@
  * @Author: Chenyichen12 sama1538@outlook.com
  * @Date: 2024-05-02 10:04:43
  */
+#include "../ans_page/questions/question_list.h"
+#include "../ans_page/show_area/show_mat.hpp"
 #include "../level_mode.h"
 #include "ans_page/ans_model.hpp"
-#include "questions/question_list.h"
-#include "show_area/show_mat.hpp"
 #include "gtest/gtest.h"
 TEST(level_mode, testHandle1) {
 

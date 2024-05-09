@@ -47,6 +47,7 @@ public:
   }
 
   ans_model *borrowModel() { return this->model.get(); }
+
 signals:
   void submit_to_window(ans_model *model);
 };

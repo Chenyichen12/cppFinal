@@ -2,7 +2,7 @@
  * @Author: Chenyichen12 sama1538@outlook.com
  * @Date: 2024-05-01 19:26:57
  */
-#include "../questions/question_list.h"
+#include "../ans_page/questions/question_list.h"
 #include "gtest/gtest.h"
 
 TEST(question_modelTest, test_default) {

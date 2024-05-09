@@ -39,6 +39,7 @@ level_mode::level_mode(const QString &path, QWidget *parent)
     auto question = questions->getQuestion(i);
     auto game = new game_window(question.mat, this);
     ui->game_stack->addWidget(game);
+    game->set_game_num(i + 1);
 
     connect(game, &game_window::submit, this, &level_mode::handle_submit);
   }

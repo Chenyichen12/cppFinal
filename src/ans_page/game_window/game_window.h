@@ -3,6 +3,7 @@
  * @Date: 2024-04-30 14:54:17
  */
 #pragma once
+#include "../../decomposer/decompose_mat.h"
 #include "ans_page/ans_model.hpp"
 #include "ans_page/ans_stack.hpp"
 #include "ans_page/show_area/show_mat.hpp"
@@ -16,6 +17,9 @@ class game_window;
 
 class game_window : public QWidget {
   Q_OBJECT
+private:
+  std::unique_ptr<decomposer> Decomposer;
+
 protected:
   Ui::game_window *ui;
   show_widget *show_grid;
@@ -26,6 +30,10 @@ public:
                        QWidget *parent = nullptr);
   ~game_window() override;
 
+  void set_game_num(int num);
+
+public slots:
+  void handle_hint_ans(int index);
 signals:
   void submit(ans_model *borrowModel, show_mat *borrowAns);
 };
