@@ -79,6 +79,3 @@ CMakeLists.txt.user*
 /CMakeUserPresets.json
 /out/
 /.cache/
-/third_party/
-/cmake-build-coverage/
-/cmake-build-debug/
