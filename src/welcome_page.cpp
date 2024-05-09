@@ -3,6 +3,10 @@
  * @Date: 2024-05-02 19:55:06
  */
 #include "welcome_page.h"
+#include "create_page/create_mode.h"
+#include "level_mode.h"
+#include <QFileDialog>
+#include <QMessageBox>
 #include <qapplication.h>
 #include <qboxlayout.h>
 #include <qfont.h>
@@ -13,7 +17,6 @@
 #include <qsize.h>
 #include <qsizepolicy.h>
 #include <qwidget.h>
-
 namespace Ui {
 class welcome_page {
 public:
@@ -94,12 +97,74 @@ welcome_page::welcome_page(QWidget *parent)
   ui->setupUi(this);
   connect(ui->level_mode_btn, &QPushButton::clicked,
           [this]() { qDebug() << "enter_level"; });
-  connect(ui->create_mode_btn, &QPushButton::clicked, this,
-          [this]() { qDebug() << "create"; });
-  connect(ui->exit_btn, &QPushButton::clicked, this, [this]() {
+  connect(ui->create_mode_btn, &QPushButton::clicked, this, [this]() {
+    // 显示从文件导入还是新建对话框
+    auto d = new QMessageBox(this);
+    d->setWindowTitle("是否从文件导入");
+    // 设置文本
+    d->setText("是否导入题目");
+    d->addButton("打开题目json文件", QMessageBox::AcceptRole);
+    d->addButton("新建题目文件", QMessageBox::RejectRole);
+    // 自动析构
+    d->setAttribute(Qt::WA_DeleteOnClose);
+    auto role = d->exec();
+    if (role == QMessageBox::AcceptRole) {
+      // 打开文件
+      auto path = QFileDialog::getOpenFileName(this, "打开文件", "",
+                                               "json文件(*.json)");
+      if (path == "") {
+        emit enter_create_mode(std::nullopt);
+      } else {
+        emit enter_create_mode(path);
+      }
+    } else {
+      emit enter_create_mode(std::nullopt);
+    }
+  });
+  connect(ui->exit_btn, &QPushButton::clicked, this, []() {
     qDebug() << "exit";
     QApplication::exit(0);
   });
 }
 
 welcome_page::~welcome_page() { delete this->ui; }
+
+main_stack::main_stack(QWidget *parent) : QStackedWidget(parent) {
+  this->welcomePage = new welcome_page(this);
+  this->addWidget(welcomePage);
+  connect(welcomePage, &welcome_page::enter_level_mode, this,
+          &main_stack::handle_enter_level_mode);
+  connect(welcomePage, &welcome_page::enter_create_mode, this,
+          &main_stack::handle_enter_create_mode);
+}
+void main_stack::return_welcome_page() { this->setCurrentWidget(welcomePage); }
+void main_stack::handle_enter_level_mode(const QString &path) {
+  auto newLevel = new level_mode(path, this);
+  this->addWidget(newLevel);
+  this->setCurrentWidget(newLevel);
+
+  connect(newLevel, &level_mode::should_exit, this, [=]() {
+    this->removeWidget(newLevel);
+    newLevel->deleteLater();
+    this->return_welcome_page();
+  });
+}
+
+void main_stack::handle_enter_create_mode(const std::optional<QString> &path) {
+  create_mode *mode;
+  if (path.has_value()) {
+    mode = new create_mode(path.value(), this);
+  } else {
+    mode = new create_mode(this);
+  }
+  this->addWidget(mode);
+  this->setCurrentWidget(mode);
+
+  connect(mode, &create_mode::should_exit, this, [=]() {
+    this->removeWidget(mode);
+    mode->deleteLater();
+    this->return_welcome_page();
+  });
+}
+
+main_stack::~main_stack() = default;

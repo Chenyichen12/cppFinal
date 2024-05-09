@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
   return RUN_ALL_TESTS();
 #else
   QApplication a(argc, argv);
-  auto w = new create_mode("C:\\Users\\chen_yichen\\Desktop\\sss.json");
+  auto w = new main_stack();
   w->show();
   a.exec();
 #endif

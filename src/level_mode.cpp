@@ -67,7 +67,7 @@ void level_mode::handle_submit(ans_model *borrow_model, show_mat *borrow_mat) {
       this->current_index++;
       if (this->current_index >= questions->questionCount()) {
         // TODO: 闯关成功，进行结算。
-
+        emit should_exit();
       } else {
         ui->game_stack->setCurrentIndex(this->current_index);
       }

@@ -35,4 +35,6 @@ public:
   explicit create_mode(const QString &file_path, QWidget *parent = nullptr);
   static check_result checkLegal(ans_model *model,
                                  const std::shared_ptr<show_mat> &mat);
+signals:
+  void should_exit();
 };

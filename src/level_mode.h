@@ -32,4 +32,7 @@ public:
   static bool check_correct(ans_model *borrow_model, show_mat *borrow_mat);
 public slots:
   void handle_submit(ans_model *borrow_model, show_mat *borrow_mat);
+
+signals:
+  void should_exit();
 };

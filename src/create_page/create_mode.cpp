@@ -130,6 +130,10 @@ void create_mode::handle_save_data(QList<QList<int>> &data) {
 
   stream << jsonStr;
   file.close();
+
+  // 模态提示窗口，关闭的时候发送信号
+  QMessageBox::information(this, "保存成功", "保存成功");
+  emit should_exit();
 }
 
 QString create_mode::request_save_path() {

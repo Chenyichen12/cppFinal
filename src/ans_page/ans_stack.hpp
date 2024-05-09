@@ -22,7 +22,7 @@ private:
   single_page *page2;
 
 public:
-  ans_stack(QWidget *parent = nullptr) : QStackedWidget(parent) {
+  explicit ans_stack(QWidget *parent = nullptr) : QStackedWidget(parent) {
     this->model.reset(new ans_model());
     this->page1 = new all_page(model->getMat(), this);
 
