@@ -2,9 +2,9 @@
  * @Author: Chenyichen12 sama1538@outlook.com
  * @Date: 2024-05-01 22:31:03
  */
+#include "./ans_page/questions/question_list.h"
+#include "./ans_page/show_area/show_mat.hpp"
 #include "ans_page/ans_model.hpp"
-#include "questions/question_list.h"
-#include "show_area/show_mat.hpp"
 #include <memory>
 #include <qlabel.h>
 #include <qstackedwidget.h>

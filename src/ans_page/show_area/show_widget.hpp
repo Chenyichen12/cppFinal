@@ -11,13 +11,13 @@
 #include <qcontainerfwd.h>
 #include <qimage.h>
 
+#include "QFontMetrics"
 #include <qlist.h>
 #include <qpainter.h>
 #include <qscopedpointer.h>
 #include <qtmetamacros.h>
 #include <qwidget.h>
 #include <qwindowdefs.h>
-
 class show_widget : public QWidget {
   Q_OBJECT
 protected:
@@ -56,9 +56,27 @@ protected:
       for (int col = 0; col < gridSize; col++) {
         int x = startX + col * (cellSize + margin);
         int y = startY + row * (cellSize + margin);
+        auto num = (*this->currentDatas)(row, col);
+        if (this->currentDatas->ifHint(row, col)) {
+          painter.setBrush(QBrush(Qt::black));
+          painter.save();
+          QFontMetrics fm(painter.font());
+          auto size = fm.size(0, QString("%1").arg(num));
+          qreal sx = 1.0 * cellSize / size.width();
+          qreal sy = 1.0 * cellSize / size.height();
+          qreal scale = sx > sy ? sy : sx;
 
-        auto image = this->getImageFromNumber((*this->currentDatas)(row, col));
-        painter.drawImage(QRect(x, y, cellSize, cellSize), image);
+          painter.translate(x, y);
+          painter.scale(scale, scale);
+
+          painter.drawText(QRectF(0, 0, cellSize / scale, cellSize / scale),
+                           QString("%1").arg(num),
+                           QTextOption(Qt::AlignCenter));
+          painter.restore();
+        } else {
+          auto image = this->getImageFromNumber(num);
+          painter.drawImage(QRect(x, y, cellSize, cellSize), image);
+        }
       }
     }
   }
@@ -90,4 +108,14 @@ public:
   }
 
   show_mat *borrowMat() const { return this->currentDatas.get(); }
+
+public slots:
+  void handleHintOneNumber() {
+    this->currentDatas->setRandomHint();
+    this->update();
+  };
+  void handleHintOneNumber(int row, int col) {
+    this->currentDatas->setHint(row, col);
+    this->update();
+  }
 };

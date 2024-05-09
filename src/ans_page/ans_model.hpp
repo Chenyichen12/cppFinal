@@ -18,7 +18,7 @@ public:
     auto firstIndex = [this]() {
       for (int i = 0; i < rows(); i++) {
         for (int j = 0; j < cols(); j++) {
-          if ((*this)(i, j) == true) {
+          if ((*this)(i, j)) {
             // 前表示第一个true的index位置
             return std::array<int, 2>{i, j};
           }
@@ -29,7 +29,7 @@ public:
     auto trueNum = [this]() {
       int count = 0;
       for (int i = 0; i < this->array().size(); i++) {
-        if (this->array()(i) == true) {
+        if (this->array()(i)) {
           count++;
         }
       }
@@ -53,9 +53,9 @@ public:
   }
   int getRequire() const { return this->require; }
 
-  void setRequire(int require) { this->require = require; }
+  void setRequire(int r) { this->require = r; }
 
-  bool_table(int require = 4) {
+  explicit bool_table(int require = 4) {
     this->setConstant(false);
     this->require = require;
   }

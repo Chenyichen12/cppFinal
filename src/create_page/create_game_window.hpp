@@ -3,9 +3,9 @@
  * @Date: 2024-04-30 14:54:17
  */
 #pragma once
+#include "../ans_page/show_area/show_mat.hpp"
 #include "ans_page/ans_model.hpp"
 #include "create_page.hpp"
-#include "show_area/show_mat.hpp"
 #include "show_num_page.h"
 #include <memory>
 #include <qwidget.h>

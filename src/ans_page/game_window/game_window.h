@@ -5,8 +5,8 @@
 #pragma once
 #include "ans_page/ans_model.hpp"
 #include "ans_page/ans_stack.hpp"
-#include "show_area/show_mat.hpp"
-#include "show_area/show_widget.hpp"
+#include "ans_page/show_area/show_mat.hpp"
+#include "ans_page/show_area/show_widget.hpp"
 #include <qwidget.h>
 
 namespace Ui {
@@ -22,9 +22,9 @@ protected:
   ans_stack *ans_area;
 
 public:
-  game_window(const QList<int> &game_datas = QList<int>(36, 0),
-              QWidget *parent = nullptr);
-  ~game_window();
+  explicit game_window(const QList<int> &game_datas = QList<int>(36, 0),
+                       QWidget *parent = nullptr);
+  ~game_window() override;
 
 signals:
   void submit(ans_model *borrowModel, show_mat *borrowAns);

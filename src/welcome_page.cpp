@@ -95,8 +95,11 @@ public:
 welcome_page::welcome_page(QWidget *parent)
     : QWidget(parent), ui(new Ui::welcome_page()) {
   ui->setupUi(this);
-  connect(ui->level_mode_btn, &QPushButton::clicked,
-          [this]() { qDebug() << "enter_level"; });
+  connect(ui->level_mode_btn, &QPushButton::clicked, [this]() {
+    auto path =
+        QFileDialog::getOpenFileName(this, "打开文件", "", "json文件(*.json)");
+    emit enter_level_mode(path);
+  });
   connect(ui->create_mode_btn, &QPushButton::clicked, this, [this]() {
     // 显示从文件导入还是新建对话框
     auto d = new QMessageBox(this);

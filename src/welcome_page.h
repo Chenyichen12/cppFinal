@@ -22,6 +22,7 @@ signals:
   void exit();
 };
 
+// 用于切换页面
 class main_stack : public QStackedWidget {
   Q_OBJECT
 private:

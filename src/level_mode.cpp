@@ -3,9 +3,8 @@
  * @Date: 2024-05-01 22:55:15
  */
 #include "level_mode.h"
+#include "./ans_page/game_window/game_window.h"
 #include "ans_page/ans_model.hpp"
-#include "game_window/game_window.h"
-#include "questions/question_list.h"
 #include <qboxlayout.h>
 #include <qlabel.h>
 #include <qmessagebox.h>

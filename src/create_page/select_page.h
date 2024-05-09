@@ -3,7 +3,7 @@
  * @Date: 2024-05-05 09:55:24
  */
 #pragma once
-#include "show_area/show_mat.hpp"
+#include "../ans_page/show_area/show_mat.hpp"
 #include "show_num_page.h"
 #include <memory>
 #include <qevent.h>
