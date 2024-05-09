@@ -54,6 +54,8 @@ select_page::select_page(QWidget *parent) : QScrollArea(parent) {
   connect(add_new_btn, &QPushButton::clicked, this,
           &select_page::add_has_click);
 
+  connect(this, &select_page::widget_has_delete, this,
+          &select_page::handle_remake_layout);
   VBoxLayout->addWidget(add_new_btn);
   VBoxLayout->addLayout(mainLayout);
   VBoxLayout->addWidget(save_btn);
@@ -112,4 +114,17 @@ QWidget *select_page::create_grid_widget(num_page_grid *w) {
   grid_widget->setObjectName("grid");
   grid_widget->setStyleSheet("#grid{border: 1px solid black;}");
   return grid_widget;
+}
+void select_page::handle_remake_layout(int index) {
+  for (int i = index; i < this->show_child.size(); ++i) {
+    // 切换格子
+    int row = (i + 1) / 3;
+    int col = (i + 1) % 3;
+
+    int next_row = i / 3;
+    int next_col = i % 3;
+    auto widget = mainLayout->itemAtPosition(row, col)->widget();
+    mainLayout->removeWidget(widget);
+    mainLayout->addWidget(widget, next_row, next_col);
+  }
 }

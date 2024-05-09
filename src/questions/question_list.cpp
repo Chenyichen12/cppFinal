@@ -21,6 +21,7 @@ question_list::question_list(QString path) {
   }
 
   QByteArray data = file.readAll();
+  file.close();
   QJsonDocument doc = QJsonDocument::fromJson(data);
   auto array = doc.array();
 

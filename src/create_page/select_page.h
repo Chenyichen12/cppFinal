@@ -34,7 +34,8 @@ private:
 public:
   explicit select_page(QWidget *parent = nullptr);
   void add_num_page(std::shared_ptr<show_mat> model);
-
+public slots:
+  void handle_remake_layout(int index);
 signals:
   void widget_has_click(int index);
   void add_has_click();

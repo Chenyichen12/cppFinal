@@ -46,7 +46,7 @@ create_game_window *create_mode::add_game_widget() {
   });
   connect(newWidget, &create_game_window::submit, this,
           [this](ans_model *model, const std::shared_ptr<show_mat> &mat) {
-            auto res = create_mode::checkLegial(model, mat);
+            auto res = create_mode::checkLegal(model, mat);
             switch (res) {
             case NO_FOUR_TREE:
               QMessageBox::warning(this, "错误的矩阵",
@@ -78,8 +78,8 @@ create_mode::create_mode(const QString &filePath, QWidget *parent)
     qWarning("Cannot open file for reading");
     return;
   }
-
   QByteArray data = file.readAll();
+  file.close();
   QJsonDocument doc = QJsonDocument::fromJson(data);
   auto array = doc.array();
 
@@ -138,8 +138,8 @@ QString create_mode::request_save_path() {
   return std::move(fileName);
 }
 create_mode::check_result
-create_mode::checkLegial(ans_model *model,
-                         const std::shared_ptr<show_mat> &mat) {
+create_mode::checkLegal(ans_model *model,
+                        const std::shared_ptr<show_mat> &mat) {
   for (const auto &ans_mat : model->getMat()) {
     if (!ans_mat->ifComplete()) {
       return MAT_NOT_COMPLETE;
