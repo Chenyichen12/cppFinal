@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/mat">
+        <file>default_mat.json</file>
+    </qresource>
+</RCC>
