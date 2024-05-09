@@ -30,6 +30,8 @@ private:
 
   void handle_save_data(QList<QList<int>> &data);
 
+  void create_auto_make_widget();
+
 public:
   explicit create_mode(QWidget *parent = nullptr);
   explicit create_mode(const QString &file_path, QWidget *parent = nullptr);

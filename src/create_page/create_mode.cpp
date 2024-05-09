@@ -5,6 +5,7 @@
 #include "create_mode.h"
 #include "../decomposer/decompose_mat.h"
 #include "create_game_window.hpp"
+#include "decomposer/auto_make_question.h"
 #include "select_page.h"
 #include <optional>
 #include <qcontainerfwd.h>
@@ -20,6 +21,10 @@ create_mode::create_mode(QWidget *parent) : QStackedWidget(parent) {
   this->introPage = new select_page(this);
   this->addWidget(introPage);
   connect(introPage, &select_page::add_has_click, this, [this]() {
+    if (this->game_widget.size() >= 30) {
+      QMessageBox::information(this, "不能再加力", "一个文件最多添加30个");
+      return;
+    }
     auto newWidget = add_game_widget();
     this->setCurrentWidget(newWidget);
   });
@@ -31,6 +36,14 @@ create_mode::create_mode(QWidget *parent) : QStackedWidget(parent) {
     game_widget.remove(index);
     this->removeWidget(widget);
     widget->deleteLater();
+  });
+
+  connect(introPage, &select_page::auto_add_click, this, [this]() {
+    if (this->game_widget.size() >= 30) {
+      QMessageBox::information(this, "不能再加力", "一个文件最多添加30个");
+      return;
+    }
+    this->create_auto_make_widget();
   });
 }
 
@@ -170,4 +183,14 @@ create_mode::checkLegal(ans_model *model,
   }
 
   return COMPLETE;
+}
+void create_mode::create_auto_make_widget() {
+  auto question = auto_make_question::make_one_question();
+  auto de = decomposer(question);
+  de.Decompose();
+  if (de.ifDecompose()) {
+    auto newWidget = add_game_widget();
+    auto deModel = de.get_ans_mat();
+    newWidget->setAns(deModel);
+  }
 }

@@ -39,6 +39,7 @@ public slots:
 signals:
   void widget_has_click(int index);
   void add_has_click();
+  void auto_add_click();
   void save_data(QList<QList<int>> &datas);
 
   void widget_has_delete(int index);

@@ -34,6 +34,7 @@ select_page::select_page(QWidget *parent) : QScrollArea(parent) {
   auto add_new_btn = new QPushButton("添加", this);
 
   auto save_btn = new QPushButton("保存", this);
+  auto auto_add_btn = new QPushButton("自动添加", this);
   connect(save_btn, &QPushButton::clicked, this, [this]() {
     auto datas = QList<QList<int>>();
     for (auto a : this->show_child) {
@@ -56,7 +57,10 @@ select_page::select_page(QWidget *parent) : QScrollArea(parent) {
 
   connect(this, &select_page::widget_has_delete, this,
           &select_page::handle_remake_layout);
+  connect(auto_add_btn, &QPushButton::clicked, this,
+          &select_page::auto_add_click);
   VBoxLayout->addWidget(add_new_btn);
+  VBoxLayout->addWidget(auto_add_btn);
   VBoxLayout->addLayout(mainLayout);
   VBoxLayout->addWidget(save_btn);
   content->setLayout(VBoxLayout);
