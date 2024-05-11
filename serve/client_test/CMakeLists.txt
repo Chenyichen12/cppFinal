@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(.)
 
-find_package(Qt6 REQUIRED COMPONENTS Gui Widgets Svg Core Network)
+find_package(Qt6 REQUIRED COMPONENTS Gui Widgets Svg Core Network websockets)
 
 file(GLOB_RECURSE PROJECT_SOURCES
         ../client_test/*.cpp
@@ -22,7 +22,7 @@ qt_add_executable(plant_test_serve
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
 )
-target_compile_definitions(plant_test_serve PRIVATE json_test="${CMAKE_CURRENT_SOURCE_DIR}/test.json")
+target_compile_definitions(plant_test_serve PRIVATE json_test="${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(plant_test_serve PRIVATE Qt6::Widgets
-        PRIVATE Qt6::Gui PRIVATE Qt6::Core PRIVATE Qt6::Network
+        PRIVATE Qt6::Gui PRIVATE Qt6::Core PRIVATE Qt6::Network PRIVATE Qt6::WebSockets
 )

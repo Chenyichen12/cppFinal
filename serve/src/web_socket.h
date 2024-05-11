@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include "game_users.h"
 #include <QObject>
 #include <QTcpServer>
 class net_socket : public QObject {
@@ -10,14 +11,11 @@ class net_socket : public QObject {
 public:
   explicit net_socket(QObject *parent = nullptr);
   ~net_socket() override;
-signals:
-  void user_add_request(const QString &name);
 
 private:
   QTcpServer *server;
-  QList<QTcpSocket *> clients;
+  QList<game_users *> clients;
 
 private slots:
   void on_new_connected();
-  void on_socket_read();
 };
