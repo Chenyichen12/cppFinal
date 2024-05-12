@@ -5,17 +5,22 @@
 #pragma once
 #include "game_users.h"
 #include <QObject>
-#include <QTcpServer>
+#include <QWebSocket>
+#include <QWebSocketServer>
+
 class net_socket : public QObject {
   Q_OBJECT
 public:
   explicit net_socket(QObject *parent = nullptr);
   ~net_socket() override;
 
-private:
-  QTcpServer *server;
-  QList<game_users *> clients;
+public slots:
+  void show_all_users();
 
+private:
+  QWebSocketServer *server;
+  QList<game_users *> clients;
+  QJsonObject generateUsersInformation();
 private slots:
   void on_new_connected();
 };

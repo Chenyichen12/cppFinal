@@ -7,16 +7,16 @@
 #include "scoket_event_type.h"
 #include <QJsonDocument>
 #include <QJsonObject>
-game_users::game_users(QTcpSocket *socket, QObject *parent) : QObject(parent) {
+game_users::game_users(QWebSocket *socket, QObject *parent) : QObject(parent) {
   this->name = "undefined";
   this->uuid = QUuid::createUuid().toString();
   this->score = 0;
   this->tcpSocket = socket;
   tcpSocket->setParent(this);
-  connect(tcpSocket, &QTcpSocket::readyRead, this, [this]() {
-    auto array = this->tcpSocket->readAll();
-    this->handle_socket_event(array);
-  });
+  connect(tcpSocket, &QWebSocket::textMessageReceived, this,
+          [this](const QString &message) {
+            this->handle_socket_event(message.toLocal8Bit());
+          });
 }
 
 void game_users::set_name(const QString &m_name) {
@@ -62,11 +62,11 @@ void game_users::handle_socket_event(const QByteArray &array) {
 }
 void game_users::ackUUID() {
   QJsonObject obj;
-  obj.insert("type", socket_event_type::init_user);
+  obj.insert("type", user_socket_type::ack_uuid);
   obj.insert("uuid", this->uuid);
   QJsonDocument doc;
   doc.setObject(obj);
-  this->tcpSocket->write(doc.toJson());
+  this->tcpSocket->sendTextMessage(doc.toJson(QJsonDocument::Compact));
 }
 const QString &game_users::getName() { return this->name; }
 user_information game_users::getInformation() {
@@ -75,4 +75,7 @@ user_information game_users::getInformation() {
   information.score = this->score;
   information.id = this->uuid;
   return information;
+}
+void game_users::send_message(const QByteArray &message) {
+  this->tcpSocket->sendTextMessage(message);
 }

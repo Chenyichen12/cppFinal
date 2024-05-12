@@ -5,8 +5,8 @@
 #pragma once
 #include "scoket_event_type.h"
 #include <QDateTime>
+#include <QWebSocket>
 #include <qobject.h>
-#include <qtcpsocket.h>
 #include <qtimer.h>
 #include <quuid.h>
 class game_users : public QObject {
@@ -17,10 +17,10 @@ protected:
   std::optional<QDateTime> start_time;
   QString uuid;
 
-  QTcpSocket *tcpSocket;
+  QWebSocket *tcpSocket;
 
 public:
-  explicit game_users(QTcpSocket *socket, QObject *parent = nullptr);
+  explicit game_users(QWebSocket *socket, QObject *parent = nullptr);
 
   void set_name(const QString &m_name);
   void start_game();
@@ -33,8 +33,9 @@ public:
 
   virtual void handle_socket_event(const QByteArray &array);
   void ackUUID();
-
   user_information getInformation();
+
+  void send_message(const QByteArray &message);
 signals:
   void user_name_change(const QString &name);
   void user_score_change(int score);

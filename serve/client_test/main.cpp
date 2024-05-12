@@ -5,25 +5,27 @@
 #include <QJsonObject>
 #include <QTcpSocket>
 #include <QTimer>
+#include <QWebSocket>
 #include <qapplication.h>
 #include <qfile.h>
 class client : public QObject {
   Q_OBJECT
-  QTcpSocket *socket;
+  QWebSocket *socket;
 
 public:
   client() {
-    socket = new QTcpSocket(this);
+    socket = new QWebSocket(QString("client"),
+                            QWebSocketProtocol::VersionLatest, this);
 
-    connect(socket, &QTcpSocket::connected, this, [=]() {
+    connect(socket, &QWebSocket::connected, this, [=]() {
       auto f = QFile(QString(json_test) + "/test.json");
       f.open(QIODeviceBase::ReadOnly);
-      socket->write(f.readAll());
+      socket->sendTextMessage(f.readAll());
       // 定时10s后触发十
       auto i = new int(10);
       auto timer = new QTimer();
       connect(timer, &QTimer::timeout, this, [i, this, timer]() {
-        if (socket->isOpen()) {
+        if (socket->isValid()) {
           *i = *i - 1;
           if (*i == 0) {
             timer->stop();
@@ -34,7 +36,7 @@ public:
           obj.insert("type", 1);
           QJsonDocument doc;
           doc.setObject(obj);
-          socket->write(doc.toJson());
+          socket->sendTextMessage(doc.toJson());
         } else {
           timer->deleteLater();
           delete i;
@@ -43,12 +45,10 @@ public:
       timer->start(100);
     });
 
-    connect(socket, &QTcpSocket::readyRead, this, [=]() {
-      auto array = socket->readAll();
-      qDebug() << array;
-    });
+    connect(socket, &QWebSocket::textMessageReceived, this,
+            [=](const QString &data) { qDebug() << data; });
 
-    socket->connectToHost(QHostAddress::LocalHost, 10101);
+    socket->open(QUrl("ws://localhost:10101"));
   }
 };
 int main(int argc, char *argv[]) {

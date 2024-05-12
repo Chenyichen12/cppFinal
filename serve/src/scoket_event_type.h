@@ -4,6 +4,13 @@
 
 #pragma once
 #include <QJsonObject>
+
+/*
+ * {
+ * type: socket_event_type
+ * ......
+ * }
+ * */
 enum socket_event_type {
   init_user = 0,
   user_ans_one_point = 1,
@@ -11,6 +18,7 @@ enum socket_event_type {
   user_add_anno = 3
 };
 
+enum user_socket_type { ack_uuid = 0, users_information = 1 };
 struct user_information {
   QString id;
   QString name;
@@ -20,5 +28,6 @@ struct user_information {
     obj.insert("id", this->id);
     obj.insert("name", this->name);
     obj.insert("score", this->score);
+    return obj;
   }
 };
