@@ -16,6 +16,7 @@ public:
 
 public slots:
   void show_all_users();
+  void handle_start_game();
 
 private:
   QWebSocketServer *server;

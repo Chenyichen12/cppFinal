@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(.)
 
 find_package(Qt6 REQUIRED COMPONENTS Gui Widgets Svg Core Network websockets)
-
+find_package(Eigen3 REQUIRED)
 file(GLOB_RECURSE PROJECT_SOURCES
         ../src/*.cpp
         ../src/*.h
@@ -24,4 +24,5 @@ qt_add_executable(plant_serve
 )
 target_link_libraries(plant_serve PRIVATE Qt6::Widgets
         PRIVATE Qt6::Gui PRIVATE Qt6::Core PRIVATE Qt6::Network PRIVATE Qt6::WebSockets
+        Eigen3::Eigen
 )

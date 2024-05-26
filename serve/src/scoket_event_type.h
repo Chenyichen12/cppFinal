@@ -18,7 +18,8 @@ enum socket_event_type {
   user_add_anno = 3
 };
 
-enum user_socket_type { ack_uuid = 0, users_information = 1 };
+enum user_socket_type { ack_uuid = 0, users_information = 1, start_game = 2 };
+
 struct user_information {
   QString id;
   QString name;

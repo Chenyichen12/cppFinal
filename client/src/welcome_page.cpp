@@ -5,8 +5,10 @@
 #include "welcome_page.h"
 #include "create_page/create_mode.h"
 #include "level_mode.h"
+#include "web_challenge/challenge_mode.h"
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QTextEdit>
 #include <qapplication.h>
 #include <qboxlayout.h>
 #include <qfont.h>
@@ -24,6 +26,7 @@ public:
   QPushButton *level_mode_btn;
   QPushButton *create_mode_btn;
   QPushButton *exit_btn;
+  QPushButton *challenge_btn;
 
   void setupUi(QWidget *w) {
     auto titleWidget = new QWidget(w);
@@ -73,14 +76,25 @@ public:
     exitLayout->addSpacerItem(new QSpacerItem(20, 10, QSizePolicy::Expanding,
                                               QSizePolicy::Preferred));
 
+    challenge_btn = new QPushButton("挑战模式", w);
+    challenge_btn->setMinimumSize(QSize(300, 50));
+    challenge_btn->setFont(fontSize);
+    auto challengeLayout = new QHBoxLayout();
+    challengeLayout->addSpacerItem(new QSpacerItem(
+        20, 10, QSizePolicy::Expanding, QSizePolicy::Preferred));
+    challengeLayout->addWidget(challenge_btn);
+    challengeLayout->addSpacerItem(new QSpacerItem(
+        20, 10, QSizePolicy::Expanding, QSizePolicy::Preferred));
+
     auto container_layout = new QVBoxLayout();
     container_layout->setContentsMargins(QMargins(20, 20, 20, 20));
     container_layout->setSpacing(20);
 
     container_layout->addLayout(levelLayout);
     container_layout->addLayout(createLayout);
-    container_layout->addLayout(exitLayout);
 
+    container_layout->addLayout(challengeLayout);
+    container_layout->addLayout(exitLayout);
     auto widgetContainer = new QWidget(w);
     widgetContainer->setLayout(container_layout);
     auto main_layout = new QVBoxLayout();
@@ -91,6 +105,34 @@ public:
   }
 };
 } // namespace Ui
+class challenge_dialog : public QDialog {
+  Q_OBJECT
+public:
+  QString name;
+  challenge_dialog() {
+    auto textEdit = new QTextEdit(this);
+    auto *label = new QLabel("请输入你的名字", this);
+    auto layout = new QVBoxLayout();
+    layout->addWidget(label);
+    layout->addWidget(textEdit);
+    auto okBtn = new QPushButton("确定", this);
+    auto cancelBtn = new QPushButton("取消", this);
+    auto x = new QHBoxLayout();
+    x->addWidget(okBtn);
+    x->addWidget(cancelBtn);
+    layout->addLayout(x);
+    this->setLayout(layout);
+
+    connect(textEdit, &QTextEdit::textChanged,
+            [this, textEdit]() { this->name = textEdit->toPlainText(); });
+    connect(okBtn, &QPushButton::clicked, this, &challenge_dialog::ok);
+    connect(cancelBtn, &QPushButton::clicked, this, &challenge_dialog::cancle);
+    this->setAttribute(Qt::WA_DeleteOnClose);
+  }
+signals:
+  void ok();
+  void cancle();
+};
 
 welcome_page::welcome_page(QWidget *parent)
     : QWidget(parent), ui(new Ui::welcome_page()) {
@@ -128,6 +170,17 @@ welcome_page::welcome_page(QWidget *parent)
     qDebug() << "exit";
     QApplication::exit(0);
   });
+
+  connect(ui->challenge_btn, &QPushButton::clicked, [this]() {
+    auto dialog = new challenge_dialog();
+    connect(dialog, &challenge_dialog::ok, this, [this, dialog]() {
+      emit enter_challenge_mode(dialog->name);
+      dialog->accept();
+    });
+    connect(dialog, &challenge_dialog::cancle, this,
+            [dialog]() { dialog->reject(); });
+    dialog->exec();
+  });
 }
 
 welcome_page::~welcome_page() { delete this->ui; }
@@ -139,6 +192,8 @@ main_stack::main_stack(QWidget *parent) : QStackedWidget(parent) {
           &main_stack::handle_enter_level_mode);
   connect(welcomePage, &welcome_page::enter_create_mode, this,
           &main_stack::handle_enter_create_mode);
+  connect(welcomePage, &welcome_page::enter_challenge_mode, this,
+          &main_stack::handle_enter_challenge_mode);
 }
 void main_stack::return_welcome_page() { this->setCurrentWidget(welcomePage); }
 void main_stack::handle_enter_level_mode(const QString &path) {
@@ -169,5 +224,12 @@ void main_stack::handle_enter_create_mode(const std::optional<QString> &path) {
     this->return_welcome_page();
   });
 }
+void main_stack::handle_enter_challenge_mode(const QString &name) {
+  auto challenge = new challenge_mode(name, this);
+  this->addWidget(challenge);
+  this->setCurrentWidget(challenge);
+}
 
 main_stack::~main_stack() = default;
+
+#include "welcome_page.moc"

@@ -16,3 +16,13 @@ int main() {
   const un &t2 = test;
   *t2.ptr = 20;
 }
+class s {
+  int gg = 1;
+  int &sss() { return gg; }
+};
+
+class in {
+  int &shui;
+  in(int &data) : shui(data) {}
+  void mo(int &ano) { this->shui = ano; }
+};

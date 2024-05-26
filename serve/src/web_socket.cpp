@@ -4,6 +4,7 @@
 
 #include "web_socket.h"
 #include <QJsonArray>
+#include <auto_make_question.h>
 #include <qjsondocument.h>
 #include <qvariant.h>
 net_socket::net_socket(QObject *parent) : QObject(parent) {
@@ -54,6 +55,27 @@ void net_socket::show_all_users() {
   for (auto &&i : array) {
     auto o = i.toObject();
     qDebug() << o;
+  }
+}
+void net_socket::handle_start_game() {
+  QJsonDocument doc;
+  QJsonObject obj;
+  obj.insert("type", user_socket_type::start_game);
+  QJsonArray questionList;
+  for (int j = 0; j < 20; ++j) {
+    auto question = auto_make_question::make_one_question();
+    auto array = QJsonArray();
+    for (int i = 0; i < question.size(); ++i) {
+      array.append(QJsonValue(question(i)));
+    }
+    questionList.append(array);
+  }
+
+  obj.insert("questions", questionList);
+  doc.setObject(obj);
+  auto str = doc.toJson(QJsonDocument::Compact);
+  for (auto &user : this->clients) {
+    user->send_message(str);
   }
 }
 net_socket::~net_socket() = default;

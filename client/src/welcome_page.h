@@ -19,6 +19,7 @@ public:
 signals:
   void enter_level_mode(const QString &path);
   void enter_create_mode(const std::optional<QString> &path);
+  void enter_challenge_mode(const QString &);
   void exit();
 };
 
@@ -35,4 +36,5 @@ public:
 public slots:
   void handle_enter_level_mode(const QString &path);
   void handle_enter_create_mode(const std::optional<QString> &path);
+  void handle_enter_challenge_mode(const QString &);
 };

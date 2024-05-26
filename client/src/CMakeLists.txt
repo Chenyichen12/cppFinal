@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 include_directories(.)
 
-find_package(Qt6 REQUIRED COMPONENTS Gui Widgets Svg Core)
+find_package(Qt6 REQUIRED COMPONENTS Gui Widgets Svg Core websockets)
 
 find_package(Eigen3 CONFIG REQUIRED)
 
@@ -47,7 +47,7 @@ function(add_main_executable)
             <QMap>)
     target_link_libraries(PlantTree PRIVATE Qt6::Widgets
             PRIVATE Qt6::Svg PRIVATE Qt6::Gui PRIVATE Qt6::Core
-
+            PRIVATE Qt6::WebSockets
     )
 
 endfunction(add_main_executable)
@@ -65,6 +65,7 @@ function(add_test_exectable)
 
     target_link_libraries(treeTest PRIVATE Qt6::Widgets
             PRIVATE Qt6::Svg PRIVATE Qt6::Gui PRIVATE Qt6::Core
+            PRIVATE Qt6::WebSockets
             gtest
     )
 endfunction(add_test_exectable)

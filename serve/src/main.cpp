@@ -41,6 +41,7 @@ private:
         break;
       case START_GAME:
         std::cout << "start_game" << std::endl;
+        emit start_game();
         break;
       case EXIT:
         emit exit();
@@ -56,11 +57,14 @@ public:
     //    connect(this, &cmd_thread::exit, qApp, &QApplication::quit);
     connect(this, &cmd_thread::exit, scoket, []() { QApplication::quit(); });
     connect(this, &cmd_thread::show_users, scoket, &net_socket::show_all_users);
+    connect(this, &cmd_thread::start_game, scoket,
+            &net_socket::handle_start_game);
   }
 public slots:
   void run() { this->wait_input(); }
 signals:
   void show_users();
+  void start_game();
   void exit();
 };
 int main(int argc, char *argv[]) {
