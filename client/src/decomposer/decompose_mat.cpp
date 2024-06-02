@@ -120,7 +120,9 @@ bool decomposer::ifGo(int c, const Eigen::Matrix<int, 6, 6> &currentMat) {
       this->ifDecomposer = true;
       return true;
     } else {
-      mat_ptr->moveNext();
+      auto res = mat_ptr->moveNext();
+      if (!res)
+        return false;
     }
   }
 }
@@ -205,5 +207,19 @@ TEST(decomposer, test_array_construtor) {
   }
 
   ASSERT_EQ((*mat)(1, 1), 7);
+}
+
+#include "auto_make_question.h"
+TEST(decompser, test_decoder) {
+  for (int i = 0; i < 100; i++) {
+
+    auto question = auto_make_question::make_one_question();
+    auto model = decomposer(question);
+
+    model.Decompose();
+    if(!model.ifDecompose()){
+      std::cout<<i<<'\n';
+    }
+  }
 }
 #endif

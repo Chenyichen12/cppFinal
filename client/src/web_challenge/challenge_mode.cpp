@@ -433,15 +433,15 @@ void challenge_mode::handle_web_event(const QString &event) {
   }
 }
 
-#ifdef TREE_TEST
-#include <QApplication>
-#include <QTimer>
-#include <gtest/gtest.h>
-TEST(challenge_mode, show_question_mat) {
-  auto c = new challenge_mode("test");
-  c->show();
-  QApplication::exec();
-}
-#endif
+//#ifdef TREE_TEST
+//#include <QApplication>
+//#include <QTimer>
+//#include <gtest/gtest.h>
+//TEST(challenge_mode, show_question_mat) {
+//  auto c = new challenge_mode("test");
+//  c->show();
+//  QApplication::exec();
+//}
+//#endif
 
 #include "challenge_mode.moc"

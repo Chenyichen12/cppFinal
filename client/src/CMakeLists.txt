@@ -55,7 +55,7 @@ endfunction(add_main_executable)
 add_main_executable()
 
 function(add_test_exectable)
-    find_package(GTest)
+    find_package(GTest CONFIG REQUIRED)
     qt_add_executable(treeTest
             ${PROJECT_SOURCES}
             ../res/svg.qrc
@@ -66,7 +66,7 @@ function(add_test_exectable)
     target_link_libraries(treeTest PRIVATE Qt6::Widgets
             PRIVATE Qt6::Svg PRIVATE Qt6::Gui PRIVATE Qt6::Core
             PRIVATE Qt6::WebSockets
-            gtest
+            PRIVATE GTest::gtest GTest::gtest_main GTest::gmock GTest::gmock_main
     )
 endfunction(add_test_exectable)
 
