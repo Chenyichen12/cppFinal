@@ -187,7 +187,6 @@ Eigen::Matrix<int, 6, 6> auto_make_question::make_one_question() {
 TEST(decoder,decoder1){
     for(int i = 0;i<100;i++){
         auto ans = auto_make_question::make_one_question();
-        std::cout<<ans;
     }
 }
 #endif

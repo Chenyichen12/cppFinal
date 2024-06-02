@@ -36,6 +36,11 @@ void net_socket::on_new_connected() {
       user->send_message(information);
     }
   });
+
+  connect(newUser,&game_users::user_acquire_score,this,[newUser,this](){
+    this->submit_score_to_client(newUser);
+  });
+
 }
 QJsonObject net_socket::generateUsersInformation() {
   auto obj = QJsonObject();
@@ -77,5 +82,12 @@ void net_socket::handle_start_game() {
   for (auto &user : this->clients) {
     user->send_message(str);
   }
+}
+void net_socket::submit_score_to_client(game_users *user) {
+  auto userInformation = this->generateUsersInformation();
+  QJsonDocument doc;
+  doc.setObject(userInformation);
+  auto str = doc.toJson(QJsonDocument::Compact);
+  user->send_message(str);
 }
 net_socket::~net_socket() = default;

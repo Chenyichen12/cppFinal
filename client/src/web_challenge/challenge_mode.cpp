@@ -164,7 +164,7 @@ public:
   QWidget *showArea;
   QWidget *sideBar;
   QPushButton *hintBtn;
-  QWidget *realTimeUser;
+  QPushButton* display_score_btn;
   void setupUi(QWidget *w) {
     this->showArea = new QWidget(w);
 #if uiTest
@@ -178,12 +178,11 @@ public:
     layoutTop->addWidget(showArea);
     sideBar = new QWidget(w);
     hintBtn = new QPushButton("提示....", w);
-    realTimeUser = new QWidget(w);
-    realTimeUser->setStyleSheet("background-color: black;");
-    realTimeUser->setMinimumSize(QSize(100, 100));
-    auto sideBarLayout = new QHBoxLayout();
+    display_score_btn = new QPushButton("显示排行榜",w);
+
+    auto sideBarLayout = new QVBoxLayout();
     sideBarLayout->addWidget(hintBtn);
-    sideBarLayout->addWidget(realTimeUser);
+    sideBarLayout->addWidget(display_score_btn);
     sideBar->setLayout(sideBarLayout);
     layoutTop->addWidget(sideBar);
 
@@ -433,15 +432,15 @@ void challenge_mode::handle_web_event(const QString &event) {
   }
 }
 
-//#ifdef TREE_TEST
-//#include <QApplication>
-//#include <QTimer>
-//#include <gtest/gtest.h>
-//TEST(challenge_mode, show_question_mat) {
-//  auto c = new challenge_mode("test");
-//  c->show();
-//  QApplication::exec();
-//}
-//#endif
+// #ifdef TREE_TEST
+// #include <QApplication>
+// #include <QTimer>
+// #include <gtest/gtest.h>
+// TEST(challenge_mode, show_question_mat) {
+//   auto c = new challenge_mode("test");
+//   c->show();
+//   QApplication::exec();
+// }
+// #endif
 
 #include "challenge_mode.moc"

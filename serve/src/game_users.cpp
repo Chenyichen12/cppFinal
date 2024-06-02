@@ -58,6 +58,9 @@ void game_users::handle_socket_event(const QByteArray &array) {
   case socket_event_type::user_ans_three_point:
     this->set_score(this->score + 3);
     break;
+  case socket_event_type::user_acquire_score:
+    emit this->user_acquire_score();
+    break;
   }
 }
 void game_users::ackUUID() {

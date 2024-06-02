@@ -40,4 +40,5 @@ signals:
   void user_name_change(const QString &name);
   void user_score_change(int score);
   void user_init_complete();
+  void user_acquire_score();
 };

@@ -15,7 +15,8 @@ enum socket_event_type {
   init_user = 0,
   user_ans_one_point = 1,
   user_ans_three_point = 2,
-  user_add_anno = 3
+  user_add_anno = 3,
+  user_acquire_score = 4
 };
 
 enum user_socket_type { ack_uuid = 0, users_information = 1, start_game = 2 };

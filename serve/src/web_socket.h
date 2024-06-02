@@ -17,6 +17,7 @@ public:
 public slots:
   void show_all_users();
   void handle_start_game();
+  void submit_score_to_client(game_users* user);
 
 private:
   QWebSocketServer *server;
