@@ -164,7 +164,7 @@ public:
   QWidget *showArea;
   QWidget *sideBar;
   QPushButton *hintBtn;
-  QPushButton* display_score_btn;
+  QPushButton *display_score_btn;
   void setupUi(QWidget *w) {
     this->showArea = new QWidget(w);
 #if uiTest
@@ -178,7 +178,7 @@ public:
     layoutTop->addWidget(showArea);
     sideBar = new QWidget(w);
     hintBtn = new QPushButton("提示....", w);
-    display_score_btn = new QPushButton("显示排行榜",w);
+    display_score_btn = new QPushButton("显示排行榜", w);
 
     auto sideBarLayout = new QVBoxLayout();
     sideBarLayout->addWidget(hintBtn);
@@ -203,6 +203,36 @@ public:
     w->setLayout(mainLayout);
   }
 };
+
+
+class all_user_board: public QDialog{
+private:
+  QList<user_name_score> d;
+public:
+  explicit all_user_board(const QList<user_name_score> &datas,QWidget* parent = nullptr): QDialog(parent) {
+    this->d = datas;
+    auto get_an_item = [this](const user_name_score &dd){
+      auto newLayout = new QHBoxLayout();
+      auto nameLabel = new QLabel(this);
+      nameLabel->setText(dd.name);
+      auto scoreLabel = new QLabel(this);
+      scoreLabel->setText(QString("%1").arg(dd.score));
+      newLayout->addWidget(nameLabel);
+      newLayout->addWidget(scoreLabel);
+      return newLayout;
+    };
+
+    auto mainLayout = new QVBoxLayout();
+    for (const auto &item : d){
+      auto l = get_an_item(item);
+      mainLayout->addLayout(l);
+    }
+    this->setLayout(mainLayout);
+    this->setAttribute(Qt::WA_DeleteOnClose);
+  }
+};
+
+
 class challenge_game_window : public QWidget {
   Q_OBJECT
 private:
@@ -241,9 +271,19 @@ public:
           (*mat)(j) = anss(j) == 1;
         }
       }
+
+
       ans_area->update();
     });
-
+    connect(ui->display_score_btn,&QPushButton::clicked,[this](){
+      auto user_data = emit require_user_score();
+      for (const auto &item : user_data){
+        qDebug()<<item.name<<item.score;
+      }
+      auto dialog = new all_user_board(user_data,this);
+      dialog->setModal(true);
+      dialog->show();
+    });
     connect(ans_area, &ans_stack::submit_to_window, [this](ans_model *model) {
       auto mat = this->question_mat->borrowMat();
       emit submit(model, mat);
@@ -281,6 +321,7 @@ public:
   }
 signals:
   void submit(ans_model *borrowModel, show_mat *borrowAns);
+  QList<user_name_score> require_user_score();
 };
 
 challenge_mode::challenge_mode(const QString &name, QWidget *parent)
@@ -325,16 +366,26 @@ void challenge_mode::handle_web_event(const QString &event) {
     qDebug() << "uuid_ack";
     this->uuid = obj["uuid"].toString();
     break;
-  case 1:
+  case 1: {
+    auto info = obj["users"].toArray();
     if (state == waiting) {
-      auto info = obj["users"].toArray();
       this->wait->clearUser();
       for (auto &&i : info) {
         auto o = i.toObject();
         this->wait->add_users(o["name"].toString());
       }
     }
+    QList<user_name_score> use;
+
+    for(auto &&i: info){
+      auto o = i.toObject();
+      auto n = o["name"].toString();
+      auto score = o["score"].toInt();
+      use.append({n,score});
+    }
+    this->users = use;
     break;
+  }
   case 2:
     if (state == waiting) {
       auto questions = obj.value("questions").toArray();
@@ -357,7 +408,7 @@ void challenge_mode::handle_web_event(const QString &event) {
         auto game_window = new challenge_game_window(list, this);
         this->addWidget(game_window);
         this->game_pages.append(game_window);
-
+        connect(game_window,&challenge_game_window::require_user_score,this,&challenge_mode::handle_require_score);
         connect(game_window, &challenge_game_window::submit, this,
                 [this, i](ans_model *model, show_mat *mat) {
                   auto res = challenge_game_window::checkCorrect(model, mat);
@@ -371,6 +422,13 @@ void challenge_mode::handle_web_event(const QString &event) {
                     msgBox->exec();
                     this->intro->setCompleted(i);
                     this->setCurrentWidget(this->intro);
+                    auto ScoreJson = QJsonDocument();
+                    auto obj = QJsonObject();
+                    obj.insert("type", i < 15 ? 1 : 2);
+                    ScoreJson.setObject(obj);
+                    socket->sendTextMessage(
+                        ScoreJson.toJson(QJsonDocument::Compact));
+
                   } else {
                     // 作答错误
                     auto msgBox = new QMessageBox(
@@ -430,6 +488,9 @@ void challenge_mode::handle_web_event(const QString &event) {
   default:
     break;
   }
+}
+QList<user_name_score> challenge_mode::handle_require_score() {
+  return this->users;
 }
 
 // #ifdef TREE_TEST
