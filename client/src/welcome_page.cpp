@@ -228,6 +228,12 @@ void main_stack::handle_enter_challenge_mode(const QString &name) {
   auto challenge = new challenge_mode(name, this);
   this->addWidget(challenge);
   this->setCurrentWidget(challenge);
+
+  connect(challenge, &challenge_mode::should_exit, this, [=]() {
+    this->removeWidget(challenge);
+    challenge->deleteLater();
+    this->return_welcome_page();
+  });
 }
 
 main_stack::~main_stack() = default;

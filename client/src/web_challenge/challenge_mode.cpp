@@ -132,6 +132,15 @@ public:
     completed[index] = true;
   }
 
+  bool isAllComplete() {
+    for (const auto &item : this->completed) {
+      if (item == false) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   bool isComplete(int index) { return completed[index]; }
 
   int getQuestionSize() const { return (int)questions_widget.size(); }
@@ -204,14 +213,16 @@ public:
   }
 };
 
-
-class all_user_board: public QDialog{
+class all_user_board : public QDialog {
 private:
   QList<user_name_score> d;
+
 public:
-  explicit all_user_board(const QList<user_name_score> &datas,QWidget* parent = nullptr): QDialog(parent) {
+  explicit all_user_board(const QList<user_name_score> &datas,
+                          QWidget *parent = nullptr)
+      : QDialog(parent) {
     this->d = datas;
-    auto get_an_item = [this](const user_name_score &dd){
+    auto get_an_item = [this](const user_name_score &dd) {
       auto newLayout = new QHBoxLayout();
       auto nameLabel = new QLabel(this);
       nameLabel->setText(dd.name);
@@ -223,7 +234,7 @@ public:
     };
 
     auto mainLayout = new QVBoxLayout();
-    for (const auto &item : d){
+    for (const auto &item : d) {
       auto l = get_an_item(item);
       mainLayout->addLayout(l);
     }
@@ -231,7 +242,6 @@ public:
     this->setAttribute(Qt::WA_DeleteOnClose);
   }
 };
-
 
 class challenge_game_window : public QWidget {
   Q_OBJECT
@@ -272,15 +282,14 @@ public:
         }
       }
 
-
       ans_area->update();
     });
-    connect(ui->display_score_btn,&QPushButton::clicked,[this](){
+    connect(ui->display_score_btn, &QPushButton::clicked, [this]() {
       auto user_data = emit require_user_score();
-      for (const auto &item : user_data){
-        qDebug()<<item.name<<item.score;
+      for (const auto &item : user_data) {
+        qDebug() << item.name << item.score;
       }
-      auto dialog = new all_user_board(user_data,this);
+      auto dialog = new all_user_board(user_data, this);
       dialog->setModal(true);
       dialog->show();
     });
@@ -377,11 +386,11 @@ void challenge_mode::handle_web_event(const QString &event) {
     }
     QList<user_name_score> use;
 
-    for(auto &&i: info){
+    for (auto &&i : info) {
       auto o = i.toObject();
       auto n = o["name"].toString();
       auto score = o["score"].toInt();
-      use.append({n,score});
+      use.append({n, score});
     }
     this->users = use;
     break;
@@ -408,7 +417,8 @@ void challenge_mode::handle_web_event(const QString &event) {
         auto game_window = new challenge_game_window(list, this);
         this->addWidget(game_window);
         this->game_pages.append(game_window);
-        connect(game_window,&challenge_game_window::require_user_score,this,&challenge_mode::handle_require_score);
+        connect(game_window, &challenge_game_window::require_user_score, this,
+                &challenge_mode::handle_require_score);
         connect(game_window, &challenge_game_window::submit, this,
                 [this, i](ans_model *model, show_mat *mat) {
                   auto res = challenge_game_window::checkCorrect(model, mat);
@@ -428,6 +438,10 @@ void challenge_mode::handle_web_event(const QString &event) {
                     ScoreJson.setObject(obj);
                     socket->sendTextMessage(
                         ScoreJson.toJson(QJsonDocument::Compact));
+                    bool ifAllComplete = this->intro->isAllComplete();
+                    if (ifAllComplete) {
+                      emit this->should_exit();
+                    }
 
                   } else {
                     // 作答错误

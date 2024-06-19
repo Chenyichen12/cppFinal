@@ -7,7 +7,7 @@
 #include <QStackedWidget>
 #include <QWebSocket>
 class challenge_game_window;
-struct user_name_score{
+struct user_name_score {
   QString name;
   int score;
 };
@@ -38,5 +38,6 @@ public:
   explicit challenge_mode(const QString &name, QWidget *parent = nullptr);
   void handle_web_event(const QString &event);
 
-
+signals:
+  void should_exit();
 };
